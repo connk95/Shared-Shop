@@ -1,0 +1,39 @@
+コーディング規約
+
+・ファイル名は詳細設計書を参考にする。
+
+・クラス及びメソッド、クラス、変数などの始まる直前にJavaDocコメントを記す。
+
+・キャメル型　例　→　public String doLogin 
+
+・配列の宣言は、Type[] arrayNameとする。例　→　static void main(String[] args);
+
+・変数は初期値と共に宣言する。例　→　int i = 1;  
+
+・RequestMappingの記載方法は、@PostMapping @Getmapping　で記す。
+
+・定数は全文字を大文字で記す。
+
+・「Ctrl + Shift + F」で整理する。デフォルトに合わせる。
+
+・コントローラクラス内のメソッド戻り値やテンプレートファイルのパスが相対パス指定であること 
+ ※以下のパスを参考にする。 
+ 
+➢ 注意 1:コントローラクラス内のメソッド戻り値の先頭に/を記述していないこと 
+- NG-記述例 return "/client/item/list";  
+
+- OK-記述例 return "client/item/list";  
+
+
+➢ コントローラクラス内のメソッド戻り値でリダイレクト先が相対パス指定であること 
+- NG-記述例 return " redirect:http://localhost:55000/shared_shop/ ";  
+
+- OK-記述例 return " redirect:/ ";  
+
+
+➢ テンプレートファイル内のパスが相対パス指定であること 
+- NG-記述例 <a href=" http://localhost:55000/shared_shop/ ">トップ画面</a> 
+
+- OK-記述例<a href=" /shared_shop/ ">トップ画面</a>  
+
+- OK-記述例<a th:href=" @{/} ">トップ画面</a> 
