@@ -53,5 +53,7 @@ public class Constant {
 	public static final int AUTH_ADMIN = 1;
 	/** 権限の値(一般会員) */
 	public static final int AUTH_CLIENT = 2;
-
+	
+	/** 買い物かご注文数初期値 */
+	public static final int DEFAULT_BUSKET_ORDER_NUM = 1;
 }
