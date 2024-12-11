@@ -28,9 +28,11 @@ public class ClientUserShowController {
 	 */
 	@GetMapping("/client/user/detail")
 	public String clientUserShow(Model model, UserForm form) {
+		
 		User user = new User();
 		UserBean userBean = new UserBean();
 		
+		//
 		user = userRepository.getReferenceById(((UserBean) session.getAttribute("user")).getId());
 		BeanUtils.copyProperties(user, userBean);
 		model.addAttribute("userBean", userBean);
