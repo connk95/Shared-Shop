@@ -42,8 +42,8 @@
 				<td th:text="${item.orderNum}"></td>
 				<td>
 					<form th:action="@{/client/basket/delete}" method="post">
-						<input type="hidden" name="id" th:value="${item.id}" /> <input type="submit" value="削除"
-							class="delete" />
+						<input type="hidden" name="id" th:value="${item.id}" />
+						<input type="submit" value="削除" class="delete" />
 					</form>
 				</td>
 				<td th:if="${item.stock == 0}" th:text="#{data.out.of.stock}"></td>
@@ -62,6 +62,8 @@
 			</form>
 		</div>
 	</th:block>
+	<!--/* DummyInfo 終わったら削除 */-->
+	<a th:href="@{/client/basket/dummy}">ダミー情報</a>
 </body>
 
 </html>
