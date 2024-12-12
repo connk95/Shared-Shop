@@ -1,5 +1,7 @@
 package jp.co.sss.shop.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +27,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 */
 	@Query("SELECT i FROM Item i INNER JOIN i.category c WHERE i.deleteFlag =:deleteFlag ORDER BY i.insertDate DESC,i.id DESC")
 	Page<Item> findByDeleteFlagOrderByInsertDateDescPage(
-	        @Param(value = "deleteFlag") int deleteFlag, Pageable pageable);
+			@Param(value = "deleteFlag") int deleteFlag, Pageable pageable);
 
 	/**
 	 * 商品IDと削除フラグを条件に検索（管理者機能で利用）
@@ -42,4 +44,35 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 * @return 商品エンティティ
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
+
+
+	/**
+	 *新着順の商品一覧を取得
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i ORDER BY i.insertDate DESC,i.id DESC")
+	List<Item> findNewItems();
+
+	/**
+	 * カテゴリ指定の新着順を検索
+	 * @param categoryId カテゴリーID
+	 * @return 商品エンティティ
+	 */
+	List<Item> findByCategoryIdOrderByInsertDateDesc(Integer categoryId);
+
+	/**
+	 * カテゴリ指定の売れ筋順を検索
+	 * @param categoryId カテゴリーID
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = :deleteFlag")
+	List<Item> findByCategoryIdAndDeleteFlag(@Param("categoryId") Integer categoryId, @Param("deleteFlag") int deleteFlag);
+
+	/**
+	 * 全検索
+	 * @param deleteFrag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	List<Item> findAllByDeleteFlag(int deleteFrag);
+
 }
