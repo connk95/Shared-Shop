@@ -48,13 +48,11 @@ public class ClientItemShowController {
 	 * @param model    Viewとの値受渡し
 	 * @return "index" トップ画面
 	 */
-	@RequestMapping(path = "/" , method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
 	public String index(Model model) {
-	
+
 		return "index";
 	}
-	
-	
 
 	/**
 	 * 商品名リンククリック→詳細表示
@@ -66,11 +64,32 @@ public class ClientItemShowController {
 		model.addAttribute("item", item);
 		return "client/item/detail";
 	}
-	
-	
 
+	/**
+	 * トップ画面　価格別検索
+	 * 
+	 * @param model　
+	 * @param price
+	 * @return "client/item/list" 一覧表示画面
+	 */
+	@GetMapping("/client/item/list/{sortType}")
+	public String showPrice(@PathVariable Integer sortType, String price, Model model) {
+		//文字列を区別して条件検索を行う
+		if (price.equals("30000")) {
+			Integer over = Integer.parseInt(price);
+			model.addAttribute("items", itemRepository.findByOverPriceQuery(over));
+		} else if (price.equals("0")) {
 
+			model.addAttribute("items", itemRepository.findAllByOrderByPriceAsc());
+		} else {
 
-	
+			String[] prices = price.split("～");
+			Integer min = Integer.parseInt(prices[0]);
+			Integer max = Integer.parseInt(prices[1]);
+			model.addAttribute("items", itemRepository.findByPriceQuery(min, max));
+
+		}
+		return "client/item/list";
+	}
 
 }

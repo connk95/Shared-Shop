@@ -1,5 +1,7 @@
 package jp.co.sss.shop.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,7 +27,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 */
 	@Query("SELECT i FROM Item i INNER JOIN i.category c WHERE i.deleteFlag =:deleteFlag ORDER BY i.insertDate DESC,i.id DESC")
 	Page<Item> findByDeleteFlagOrderByInsertDateDescPage(
-	        @Param(value = "deleteFlag") int deleteFlag, Pageable pageable);
+			@Param(value = "deleteFlag") int deleteFlag, Pageable pageable);
 
 	/**
 	 * 商品IDと削除フラグを条件に検索（管理者機能で利用）
@@ -42,4 +44,26 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 * @return 商品エンティティ
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
+
+	/**
+	 * 価格を条件に検索（\0-1500 ～ \10000-30000を選択後、条件を検索）
+	 * @param price
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i WHERE i.price >=:min AND i.price<=:max Order By i.price Asc")
+	public List<Item> findByPriceQuery(@Param("min") Integer min, @Param("max") Integer max);
+
+	/**
+	 * 価格を条件に検索（\30000以上を選択後、条件を検索）
+	 * @param over
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i WHERE i.price >=:over Order By i.price Asc")
+	public List<Item> findByOverPriceQuery(@Param("over") Integer over);
+
+	/**
+	 * 価格を条件に検索（-指定なし-を選択後、全件検索）
+	 * @return 商品エンティティ
+	 */
+	List<Item> findAllByOrderByPriceAsc();
 }
