@@ -5,14 +5,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+
 import jp.co.sss.shop.bean.ItemBean;
+import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.util.ItemBeanComparator;
 
@@ -22,12 +26,21 @@ import jp.co.sss.shop.util.ItemBeanComparator;
  * @author SystemShared
  */
 @Controller
+
 public class ClientItemShowController {
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	HttpSession session;
+	
 	/**
 	 * 商品情報
 	 */
-	@Autowired
-	ItemRepository itemRepository;
+
+    @Autowired
+    ItemRepository itemRepository;
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
@@ -112,5 +125,52 @@ public class ClientItemShowController {
 		model.addAttribute("sortType", sortType);
 		model.addAttribute("categoryId", categoryId);
 		return "client/item/list"; // 商品一覧画面
+
+//	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
+//	public String index(Model model) {
+//
+
 	}
+
+	/**
+	 * 商品名リンククリック→詳細表示
+	 */
+	
+	@GetMapping("/client/item/detail/{id}")
+	public String detail(@PathVariable Integer id, Model model){
+		Item item = itemRepository.getReferenceById(id);
+		model.addAttribute("item", item);
+		return "client/item/detail";
+	}
+
+  
+  //　修正しないといけない
+  
+	/**
+	 * トップ画面　価格別検索
+	 * 
+	 * @param model　
+	 * @param price
+	 * @return "client/item/list" 一覧表示画面
+	 */
+	@GetMapping("/client/item/list/{price}")
+	public String showPrice(@PathVariable Integer sortType, String price, Model model) {
+		//文字列を区別して条件検索を行う
+		if (price.equals("30000")) {
+			Integer over = Integer.parseInt(price);
+			model.addAttribute("items", itemRepository.findByOverPriceQuery(over));
+		} else if (price.equals("0")) {
+
+			model.addAttribute("items", itemRepository.findAllByOrderByPriceAsc());
+		} else {
+
+			String[] prices = price.split("～");
+			Integer min = Integer.parseInt(prices[0]);
+			Integer max = Integer.parseInt(prices[1]);
+			model.addAttribute("items", itemRepository.findByPriceQuery(min, max));
+
+		}
+		return "client/item/list";
+	}
+
 }
