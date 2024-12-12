@@ -34,7 +34,7 @@
 			<!-- 価格別検索-->
 			<h2 th:class="title" th:text="#{price.select.title}"></h2>
 			<div class="form">
-				<form th:action="@{/client/item/list/3}">
+				<form th:action="@{/client/item/list/price}">
 					<select name="price">
 						<option th:value="#{constants.price.select.none.no}" th:text="#{constants.price.select.none}">
 						</option>
