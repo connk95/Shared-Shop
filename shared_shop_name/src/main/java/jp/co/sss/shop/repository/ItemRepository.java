@@ -46,6 +46,35 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
 
 	/**
+	 *新着順の商品一覧を取得
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i ORDER BY i.insertDate DESC,i.id DESC")
+	List<Item> findNewItems();
+
+	/**
+	 * カテゴリ指定の新着順を検索
+	 * @param categoryId カテゴリーID
+	 * @return 商品エンティティ
+	 */
+	List<Item> findByCategoryIdOrderByInsertDateDesc(Integer categoryId);
+
+	/**
+	 * カテゴリ指定の売れ筋順を検索
+	 * @param categoryId カテゴリーID
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = :deleteFlag")
+	List<Item> findByCategoryIdAndDeleteFlag(@Param("categoryId") Integer categoryId, @Param("deleteFlag") int deleteFlag);
+
+	/**
+	 * 全検索
+	 * @param deleteFrag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	List<Item> findAllByDeleteFlag(int deleteFrag);
+
+	/**
 	 * 価格を条件に検索（\0-1500 ～ \10000-30000を選択後、条件を検索）
 	 * @param price
 	 * @return 商品エンティティ
