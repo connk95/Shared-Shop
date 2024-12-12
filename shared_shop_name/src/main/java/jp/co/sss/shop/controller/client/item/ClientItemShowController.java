@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jakarta.servlet.http.HttpSession;
+import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
 
 /**
@@ -17,12 +20,21 @@ import jp.co.sss.shop.service.BeanTools;
  * @author SystemShared
  */
 @Controller
+
 public class ClientItemShowController {
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	HttpSession session;
+	
 	/**
 	 * 商品情報
 	 */
-	@Autowired
-	ItemRepository itemRepository;
+
+    @Autowired
+    ItemRepository itemRepository;
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
@@ -40,6 +52,17 @@ public class ClientItemShowController {
 	public String index(Model model) {
 
 		return "index";
+	}
+
+	/**
+	 * 商品名リンククリック→詳細表示
+	 */
+	
+	@GetMapping("/client/item/detail/{id}")
+	public String detail(@PathVariable Integer id, Model model){
+		Item item = itemRepository.getReferenceById(id);
+		model.addAttribute("item", item);
+		return "client/item/detail";
 	}
 
 	/**
@@ -68,4 +91,5 @@ public class ClientItemShowController {
 		}
 		return "client/item/list";
 	}
+
 }
