@@ -22,19 +22,23 @@
 					</select> <input type="submit" th:value="#{select}" />
 				</form>
 				<!-- 商品一覧画面上で表示 -->
-				<form th:unless="${sortType == null}" th:action="@{/client/item/list/} + ${sortType}">
+				<form th:unless="${sortType == null}" action="**?**">
 					<select name="categoryId">
 						<option th:value="#{constants.category.select.none.no}"
 							th:text="#{constants.category.select.none}"></option>
 						<option th:each="category: ${categories}" th:value="${category.id}" th:text="${category.name}"
 							th:selected="${category.id} == ${categoryId}"></option>
-					</select> <input type="submit" th:value="#{select}" />
+					</select>
+					<input type="hidden" name="price" th:value="${price}" />
+					<input type="submit" th:value="#{select}"
+						th:formaction="@{/client/item/list/{sortType}(categoryId=${categoryId},price=${price},sortType=${sortType})}" />
 				</form>
 			</div>
 			<!-- 価格別検索-->
 			<h2 th:class="title" th:text="#{price.select.title}"></h2>
 			<div class="form">
-				<form th:action="@{/client/item/list/price}">
+				<!-- 商品一覧画面以外で表示 -->
+				<form th:if="${sortType == null}" th:action="@{/client/item/list/1}">
 					<select name="price">
 						<option th:value="#{constants.price.select.none.no}" th:text="#{constants.price.select.none}">
 						</option>
@@ -44,6 +48,27 @@
 						<option th:value="10000～30000" th:text="#{constants.price.select.10000-30000}"></option>
 						<option th:value="30000" th:text="#{constants.price.select.over.30000}"></option>
 					</select> <input type="submit" th:value="#{select}" />
+				</form>
+				<!-- 商品一覧画面上で表示 -->
+				<form th:unless="${sortType == null}" action="**?**">
+					<select name="price">
+						<option th:value="#{constants.price.select.none.no}" th:text="#{constants.price.select.none}"
+							th:selected="#{constants.price.select.none.no} == ${price}">
+						</option>
+						<option th:value="0～1500" th:text="#{constants.price.select.0-1500}"
+							th:selected="0～1500 == ${price}"></option>
+						<option th:value="1500～5000" th:text="#{constants.price.select.1500-5000}"
+							th:selected="1500～5000 == ${price}"></option>
+						<option th:value="5000～10000" th:text="#{constants.price.select.5000-10000}"
+							th:selected="5000～10000 == ${price}"></option>
+						<option th:value="10000～30000" th:text="#{constants.price.select.10000-30000}"
+							th:selected="10000～30000 == ${price}"></option>
+						<option th:value="30000" th:text="#{constants.price.select.over.30000}"
+							th:selected="30000 == ${price}"></option>
+					</select>
+					<input type="hidden" name="categoryId" th:value="${categoryId}" />
+					<input type="submit" th:value="#{select}"
+						th:formaction="@{/client/item/list/{sortType}(categoryId=${categoryId},price=${price},sortType=${sortType})}" />
 				</form>
 			</div>
 

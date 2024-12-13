@@ -19,6 +19,7 @@ import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.form.ItemForm;
 import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * オブジェクト間でのフィールドコピー処理を行うクラス
@@ -239,11 +240,10 @@ public class BeanTools {
 	 *
 	 */
 	public List<ItemBean> getNewItems() {
-		List<Item> items = itemRepository.findNewItems(); // 新着順の商品取得
+		List<Item> items = itemRepository.findNewItems(Constant.NOT_DELETED); // 新着順の商品取得
 		return convertToBeans(items);
 	}
 
-	
 	/**
 	 * ItemエンティティをItemBeanに変換
 	 * @param items Itemエンティティのリスト
@@ -260,28 +260,6 @@ public class BeanTools {
 			bean.setCategoryName(item.getCategory().getName());
 			return bean;
 		}).collect(Collectors.toList());
-	}
-
-	 
-	/**
-	 * カテゴリ指定の新着順
-	 * @param categoryId カテゴリーID
-	 * @return 新着順の商品一覧
-	 */
-	public List<ItemBean> getItemsByCategorySortedByLatest(Integer categoryId) {
-		List<Item> items = itemRepository.findByCategoryIdOrderByInsertDateDesc(categoryId);
-		return convertToBeans(items); // Item を ItemBean に変換
-	}
-
-	/**
-	 * カテゴリ指定の売れ筋順
-	 * @param categoryId カテゴリーID
-	 * @param deleteFlag 削除フラグ
-	 * @return 売れ筋順の商品一覧
-	 */
-	public List<ItemBean> getItemsByCategorySortedBySales(Integer categoryId,int deleteFlag) {
-		List<Item> items = itemRepository.findByCategoryIdAndDeleteFlag(categoryId, deleteFlag);
-		return convertToBeans(items); // Item を ItemBean に変換
 	}
 
 }

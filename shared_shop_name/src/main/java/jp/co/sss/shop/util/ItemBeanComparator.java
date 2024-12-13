@@ -3,7 +3,13 @@ package jp.co.sss.shop.util;
 import java.util.Comparator;
 
 import jp.co.sss.shop.bean.ItemBean;
-import jp.co.sss.shop.entity.Item;
+
+/**
+ * 商品売れ筋順コンパレータークラス
+ * 
+ *
+ * @author Uzawa
+ */
 
 public class ItemBeanComparator implements Comparator<ItemBean> {
 	public int compare(ItemBean o1, ItemBean o2) {
