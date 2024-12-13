@@ -96,13 +96,15 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 * @return 商品エンティティ
 	 */
 	List<Item> findAllByOrderByPriceAsc();
-	
+
+	@Query("SELECT i FROM Item i WHERE :loPrice <= i.price AND i.price <= :hiPrice ORDER BY i.price ASC")
+	public List<Item> findAllByPriceRange(@Param("loPrice") Integer loPrice, @Param("hiPrice") Integer hiPrice);
+
+
 	//価格が30,000以上でカテゴリ検索（新着順）
 	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.price >= :over AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC, i.id DESC")
 	List<Item> findByCategoryIdAndPriceOverOrderByInsertDateDesc(@Param("categoryId") Integer categoryId, @Param("over") Integer price, @Param("deleteFlag") int deleteFlag);
 	// 価格が30,000以下でカテゴリ検索（新着順）
 	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.price >= :min AND i.price <= :max AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC, i.id DESC")
 	List<Item> findByCategoryIdAndPriceUnderOrderByInsertDateDesc(@Param("categoryId") Integer categoryId, @Param("min") Integer min, @Param("max") Integer max, @Param("deleteFlag") int deleteFlag);
-	
-	
 }

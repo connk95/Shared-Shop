@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
 import jp.co.sss.shop.util.URLCheck;
 
 /**
@@ -25,6 +24,11 @@ public class LoginCheckFilter extends HttpFilter {
 
 		// リクエストURLを取得
 		String requestURL = request.getRequestURI();
+
+		if (requestURL.startsWith(request.getContextPath() + "/js")) {
+			chain.doFilter(request, response);
+			return;
+		}
 
 		if (URLCheck.isURLForNonLogin(requestURL, request.getContextPath())) {
 

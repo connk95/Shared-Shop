@@ -121,4 +121,20 @@ public class ClientItemShowController {
 		model.addAttribute("item", item);
 		return "client/item/detail";
 	}
+
+	/**
+	 * トップ画面　価格別検索
+	 * 
+	 * @param model　
+	 * @param hiPrice
+   * @param loPrice
+	 * @return "client/item/list" 一覧表示画面
+	 */
+	@GetMapping("/client/item/list/price")
+	public String showPriceRange(@RequestParam Integer loPrice, @RequestParam Integer hiPrice, Model model) {
+		model.addAttribute("items",
+				beanTools.copyEntityListToItemBeanList(itemRepository.findAllByPriceRange(loPrice, hiPrice)));
+
+		return "client/item/list";
+	}
 }
