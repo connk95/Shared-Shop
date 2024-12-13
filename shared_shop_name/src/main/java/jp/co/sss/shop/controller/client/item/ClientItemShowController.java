@@ -33,13 +33,13 @@ public class ClientItemShowController {
 
 	@Autowired
 	HttpSession session;
-	
+
 	/**
 	 * 商品情報
 	 */
 
-    @Autowired
-    ItemRepository itemRepository;
+	@Autowired
+	ItemRepository itemRepository;
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
@@ -103,8 +103,8 @@ public class ClientItemShowController {
 				// カテゴリ指定の売れ筋順
 				System.out.println("3");
 				List<Item> categoryItems = itemRepository.findByCategoryIdAndDeleteFlag(categoryId, 0); // 該当カテゴリのアイテム取得
-	            items = beanTools.copyEntityListToItemBeanList(categoryItems); // アイテムをBeanに変換
-	            items.sort(new ItemBeanComparator()); // 売れ筋順に並び替え
+				items = beanTools.copyEntityListToItemBeanList(categoryItems); // アイテムをBeanに変換
+				items.sort(new ItemBeanComparator()); // 売れ筋順に並び替え
 			} else {
 				// デフォルト：カテゴリ指定の新着順
 				System.out.println("4");
@@ -140,17 +140,14 @@ public class ClientItemShowController {
 	/**
 	 * 商品名リンククリック→詳細表示
 	 */
-	
+
 	@GetMapping("/client/item/detail/{id}")
-	public String detail(@PathVariable Integer id, Model model){
+	public String detail(@PathVariable Integer id, Model model) {
 		Item item = itemRepository.getReferenceById(id);
 		model.addAttribute("item", item);
 		return "client/item/detail";
 	}
 
-  
-  //　修正しないといけない
-  
 	/**
 	 * トップ画面　価格別検索
 	 * 
@@ -159,20 +156,10 @@ public class ClientItemShowController {
 	 * @return "client/item/list" 一覧表示画面
 	 */
 	@GetMapping("/client/item/list/price")
-	public String showPrice(String price, Model model) {
-		//文字列を区別して条件検索を行う
-		if (price.equals("30000")) {
-			Integer over = Integer.parseInt(price);
-			
-			model.addAttribute("items", beanTools.copyEntityListToItemBeanList(itemRepository.findByOverPriceQuery(over)));
-		} else if (price.equals("0")) {
-			model.addAttribute("items", beanTools.copyEntityListToItemBeanList(itemRepository.findAllByOrderByPriceAsc()));
-		} else {
-			String[] prices = price.split("～");
-			Integer min = Integer.parseInt(prices[0]);
-			Integer max = Integer.parseInt(prices[1]);
-			model.addAttribute("items", beanTools.copyEntityListToItemBeanList(itemRepository.findByPriceQuery(min, max)));
-		}
+	public String showPriceRange(@RequestParam Integer loPrice, @RequestParam Integer hiPrice, Model model) {
+		model.addAttribute("items",
+				beanTools.copyEntityListToItemBeanList(itemRepository.findAllByPriceRange(loPrice, hiPrice)));
+
 		return "client/item/list";
 	}
 

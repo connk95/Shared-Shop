@@ -95,4 +95,8 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 * @return 商品エンティティ
 	 */
 	List<Item> findAllByOrderByPriceAsc();
+	
+	@Query("SELECT i FROM Item i WHERE :loPrice <= i.price AND i.price <= :hiPrice ORDER BY i.price ASC")
+	public List<Item> findAllByPriceRange(@Param("loPrice") Integer loPrice, @Param("hiPrice") Integer hiPrice);
+
 }
