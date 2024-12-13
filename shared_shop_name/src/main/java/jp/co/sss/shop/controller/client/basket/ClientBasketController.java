@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.repository.ItemRepository;
@@ -37,7 +39,7 @@ public class ClientBasketController {
 	HttpSession session;
 
 	/**
-	 * 在庫管理クラス
+	 * 在庫管理サービス
 	 */
 	@Autowired
 	BasketService basketService;
@@ -48,7 +50,7 @@ public class ClientBasketController {
 	 * @param model    Viewとの値受渡し
 	 * @return "client/basket/list" 買い物かご画面
 	 */
-	@GetMapping("/client/basket/list")
+	@RequestMapping(path = "/client/basket/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showItemsInBasket(Model model) {
 		basketService.stockCheck(model, session);
 		return "client/basket/list";
@@ -88,7 +90,7 @@ public class ClientBasketController {
 		basketService.deleteAllItem(session);
 		return "redirect:/client/basket/list";
 	}
-	
+
 	/**
 	 * Dummyメソッド
 	 * 終わったら削除
@@ -98,5 +100,7 @@ public class ClientBasketController {
 		basketService.dummyItems(itemRepository, session);
 		return "redirect:/client/basket/list";
 	}
+	
+	
 
 }

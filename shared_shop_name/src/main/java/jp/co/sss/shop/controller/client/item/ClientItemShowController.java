@@ -39,6 +39,7 @@ public class ClientItemShowController {
 	/**
 	 * 商品情報
 	 */
+
 	@Autowired
 	ItemRepository itemRepository;
 
@@ -60,7 +61,7 @@ public class ClientItemShowController {
 	* @param model    Viewとの値受渡し
 	* @return "index" トップ画面
 	*/
-	@RequestMapping(path = "/", method = RequestMethod.GET)
+	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showTopPage(Model model) {
 		// 商品一覧を「売れ筋順」で取得
 		List<ItemBean> items = beanTools
@@ -96,7 +97,7 @@ public class ClientItemShowController {
 	 * @param model Viewとの値受渡し
 	 * @return 商品一覧画面
 	 */
-	@RequestMapping(path = "client/item/list/{sortType}", method = RequestMethod.GET)
+	@RequestMapping(path = "client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientItemList(@PathVariable("sortType") int sortType,
 			@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
 			@RequestParam(value = "price", required = false, defaultValue = "0") String price,
@@ -120,5 +121,4 @@ public class ClientItemShowController {
 		model.addAttribute("item", item);
 		return "client/item/detail";
 	}
-
 }

@@ -52,9 +52,15 @@ public class ClientOrderRegistController {
 	@Autowired
 	OrderRepository orderRepository;
 
+	/**
+	 * 商品情報
+	 */
 	@Autowired
 	ItemRepository itemRepository;
 
+	/**
+	 *注文の 商品情報
+	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
 
@@ -75,12 +81,24 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	BeanTools beanTools;
-
+	
+	/**
+	 * コントローラー全体で使用するために
+	 * orderFormを初期化する
+	 * 
+	 * @return 全体OrderForm
+	 */
 	@ModelAttribute("orderForm")
 	public OrderForm setupOrderForm() {
 		return new OrderForm();
 	}
 
+	/**
+	 * コントローラー全体で使用するために
+	 * orderItemBeansを初期化する
+	 * 
+	 * @return 全体orderItemBeans
+	 */
 	@ModelAttribute("orderItemBeans")
 	public List<OrderItemBean> setupBasketBeans(HttpSession session) {
 		Object basketBeans = session.getAttribute("basketBeans");
@@ -92,13 +110,34 @@ public class ClientOrderRegistController {
 
 		return new ArrayList<>(orderItemBeans);
 	}
-
+	
+	/**
+	 * 住所情報入力
+	 *
+	 * @return 住所情報を入力画面
+	 */
 	@RequestMapping(path = "/client/order/address/input", method = { RequestMethod.GET, RequestMethod.POST })
 	public String orderAddressInput(@ModelAttribute OrderForm orderForm, Model model) {
 
 		return "client/order/address_input";
 	}
+	
+	/**
+	 * 住所情報・支払方法・確認画面から買い物かごへ戻る
+	 *
+	 * @return 買い物かご画面
+	 */
+	@RequestMapping(path = "/client/order/payment/back", method = { RequestMethod.GET, RequestMethod.POST })
+	public String orderAddressBack(@ModelAttribute OrderForm orderForm, Model model) {
+		
+		return "client/order/address_input";
+	}
 
+	/**
+	 * 支払方法入力
+	 *
+	 * @return 支払方法画面
+	 */
 	@RequestMapping(path = "/client/order/payment/input", method = { RequestMethod.GET, RequestMethod.POST })
 	public String orderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result, Model model) {
 		if (result.hasErrors()) {
@@ -107,7 +146,12 @@ public class ClientOrderRegistController {
 
 		return "client/order/payment_input";
 	}
-
+	
+	/**
+	 * 注文確認
+	 *
+	 * @return 注文確認画面
+	 */
 	@RequestMapping(path = "/client/order/check", method = { RequestMethod.GET, RequestMethod.POST })
 	public String orderCheck(@Valid @ModelAttribute OrderForm orderForm,
 			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, BindingResult result,
@@ -116,16 +160,16 @@ public class ClientOrderRegistController {
 			return "client/order/payment_input";
 		}
 
+		// 一時的に注文を orderBean に保存する
 		OrderBean orderBean = new OrderBean();
-
 		BeanUtils.copyProperties(orderForm, orderBean);
-
+		// ユーザーデータを取得する
 		UserBean user = (UserBean) session.getAttribute("user");
 		String userName = user.getName();
-
+		// ユーザーデータと小計を注文に追加する
 		orderBean.setUserName(userName);
 		orderBean.setTotal(priceCalc.orderItemBeanPriceTotal(orderItemBeans));
-
+		// 情報を確認画面に渡す
 		model.addAttribute("total", orderBean.getTotal());
 		model.addAttribute("orderBean", orderBean);
 
@@ -139,20 +183,19 @@ public class ClientOrderRegistController {
 			return "client/order/check";
 		}
 		
+		// 注文を作成し、orderBean からコピーする
 		Order order = new Order();
 		BeanUtils.copyProperties(orderBean, order);
-		
+		// 注文のためにユーザー情報を取得する
 		UserBean userBean = (UserBean) session.getAttribute("user");
 		Integer userId = userBean.getId();
-		
 		User user = userRepository.findById(userId).orElse(null);
 		order.setUser(user);
-
+		// 注文をデータベースに保存する
 		orderRepository.save(order);
-		
+		// BasketBeans を取得し、各アイテムを order_items テーブルに保存する
 		Object basketBeans = session.getAttribute("basketBeans");
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
-		
 		basketBeanList.forEach(basketItem -> {
 			
 			OrderItem orderItem = new OrderItem();
@@ -168,7 +211,7 @@ public class ClientOrderRegistController {
 			
 			orderItemRepository.save(orderItem);
 		});
-			
+		// 一時データをクリアする
 		status.setComplete();
 		return "client/order/complete";
 	}
