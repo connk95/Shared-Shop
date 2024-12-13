@@ -98,6 +98,12 @@ public class ClientOrderRegistController {
 
 		return "client/order/address_input";
 	}
+	
+	@RequestMapping(path = "/client/order/payment/back", method = { RequestMethod.GET, RequestMethod.POST })
+	public String orderAddressBack(@ModelAttribute OrderForm orderForm, Model model) {
+		
+		return "client/order/address_input";
+	}
 
 	@RequestMapping(path = "/client/order/payment/input", method = { RequestMethod.GET, RequestMethod.POST })
 	public String orderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result, Model model) {
