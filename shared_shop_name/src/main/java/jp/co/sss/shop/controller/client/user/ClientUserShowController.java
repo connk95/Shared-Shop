@@ -4,7 +4,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.UserBean;
@@ -26,12 +27,12 @@ public class ClientUserShowController {
 	 * 
 	 * @return
 	 */
-	@GetMapping("/client/user/detail")
+	@RequestMapping(path = "/client/user/detail", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientUserShow(Model model, UserForm form) {
-		
+
 		User user = new User();
 		UserBean userBean = new UserBean();
-		
+
 		//
 		user = userRepository.getReferenceById(((UserBean) session.getAttribute("user")).getId());
 		BeanUtils.copyProperties(user, userBean);

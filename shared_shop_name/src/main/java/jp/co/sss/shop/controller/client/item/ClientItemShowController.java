@@ -33,13 +33,13 @@ public class ClientItemShowController {
 
 	@Autowired
 	HttpSession session;
-	
+
 	/**
 	 * 商品情報
 	 */
 
-    @Autowired
-    ItemRepository itemRepository;
+	@Autowired
+	ItemRepository itemRepository;
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
@@ -53,7 +53,7 @@ public class ClientItemShowController {
 	* @param model    Viewとの値受渡し
 	* @return "index" トップ画面
 	*/
-	@RequestMapping(path = "/", method = RequestMethod.GET)
+	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showTopPage(Model model) {
 		// 商品一覧を「売れ筋順」で取得
 		List<ItemBean> items = beanTools.copyEntityListToItemBeanList(itemRepository.findAllByDeleteFlag(0));
@@ -87,7 +87,7 @@ public class ClientItemShowController {
 	 * @param model Viewとの値受渡し
 	 * @return 商品一覧画面
 	 */
-	@RequestMapping(path = "client/item/list/{sortType}", method = RequestMethod.GET)
+	@RequestMapping(path = "client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientItemList(@PathVariable("sortType") int sortType,
 			@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
 			Model model) { //categoryId が0の場合は全カテゴリで表示されるように設定
@@ -103,8 +103,8 @@ public class ClientItemShowController {
 				// カテゴリ指定の売れ筋順
 				System.out.println("3");
 				List<Item> categoryItems = itemRepository.findByCategoryIdAndDeleteFlag(categoryId, 0); // 該当カテゴリのアイテム取得
-	            items = beanTools.copyEntityListToItemBeanList(categoryItems); // アイテムをBeanに変換
-	            items.sort(new ItemBeanComparator()); // 売れ筋順に並び替え
+				items = beanTools.copyEntityListToItemBeanList(categoryItems); // アイテムをBeanに変換
+				items.sort(new ItemBeanComparator()); // 売れ筋順に並び替え
 			} else {
 				// デフォルト：カテゴリ指定の新着順
 				System.out.println("4");
@@ -140,17 +140,16 @@ public class ClientItemShowController {
 	/**
 	 * 商品名リンククリック→詳細表示
 	 */
-	
+
 	@GetMapping("/client/item/detail/{id}")
-	public String detail(@PathVariable Integer id, Model model){
+	public String detail(@PathVariable Integer id, Model model) {
 		Item item = itemRepository.getReferenceById(id);
 		model.addAttribute("item", item);
 		return "client/item/detail";
 	}
 
-  
-  //　修正しないといけない
-  
+	//　修正しないといけない
+
 	/**
 	 * トップ画面　価格別検索
 	 * 
@@ -163,15 +162,18 @@ public class ClientItemShowController {
 		//文字列を区別して条件検索を行う
 		if (price.equals("30000")) {
 			Integer over = Integer.parseInt(price);
-			
-			model.addAttribute("items", beanTools.copyEntityListToItemBeanList(itemRepository.findByOverPriceQuery(over)));
+
+			model.addAttribute("items",
+					beanTools.copyEntityListToItemBeanList(itemRepository.findByOverPriceQuery(over)));
 		} else if (price.equals("0")) {
-			model.addAttribute("items", beanTools.copyEntityListToItemBeanList(itemRepository.findAllByOrderByPriceAsc()));
+			model.addAttribute("items",
+					beanTools.copyEntityListToItemBeanList(itemRepository.findAllByOrderByPriceAsc()));
 		} else {
 			String[] prices = price.split("～");
 			Integer min = Integer.parseInt(prices[0]);
 			Integer max = Integer.parseInt(prices[1]);
-			model.addAttribute("items", beanTools.copyEntityListToItemBeanList(itemRepository.findByPriceQuery(min, max)));
+			model.addAttribute("items",
+					beanTools.copyEntityListToItemBeanList(itemRepository.findByPriceQuery(min, max)));
 		}
 		return "client/item/list";
 	}
