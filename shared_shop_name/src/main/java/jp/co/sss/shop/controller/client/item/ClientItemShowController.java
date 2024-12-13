@@ -17,6 +17,8 @@ import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
+import jp.co.sss.shop.service.CatchItemListOnSortService;
+import jp.co.sss.shop.util.Constant;
 import jp.co.sss.shop.util.ItemBeanComparator;
 
 /**
@@ -48,15 +50,22 @@ public class ClientItemShowController {
 	BeanTools beanTools;
 
 	/**
+	 * 商品一覧ソートサービス
+	 */
+	@Autowired
+	CatchItemListOnSortService catchItemListOnSortService;
+
+	/**
 	* トップ画面 表示処理
 	*
 	* @param model    Viewとの値受渡し
 	* @return "index" トップ画面
 	*/
-	@RequestMapping(path = "/", method = RequestMethod.GET)
+	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showTopPage(Model model) {
 		// 商品一覧を「売れ筋順」で取得
-		List<ItemBean> items = beanTools.copyEntityListToItemBeanList(itemRepository.findAllByDeleteFlag(0));
+		List<ItemBean> items = beanTools
+				.copyEntityListToItemBeanList(itemRepository.findAllByDeleteFlag(Constant.NOT_DELETED));
 		items.sort(new ItemBeanComparator());
 		int totalQuantity = 0;
 		for (ItemBean itemBean : items) {
@@ -84,56 +93,21 @@ public class ClientItemShowController {
 	 *
 	 * @param sortType   表示順 (1: 新着順, 2: 売れ筋順)
 	 * @param categoryId カテゴリーID (null または 0 の場合は全カテゴリ)
+	 * @param price 検索価格帯
 	 * @param model Viewとの値受渡し
 	 * @return 商品一覧画面
 	 */
-	@RequestMapping(path = "client/item/list/{sortType}", method = RequestMethod.GET)
+	@RequestMapping(path = "client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientItemList(@PathVariable("sortType") int sortType,
 			@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
+			@RequestParam(value = "price", required = false, defaultValue = "0") String price,
 			Model model) { //categoryId が0の場合は全カテゴリで表示されるように設定
-		List<ItemBean> items;
-		// カテゴリ検索の条件分岐
-		System.out.println("1");
-		if (categoryId != null && categoryId != 0) {
-			if (sortType == 1) {
-				// カテゴリ指定の新着順
-				System.out.println("2");
-				items = beanTools.getItemsByCategorySortedByLatest(categoryId);
-			} else if (sortType == 2) {
-				// カテゴリ指定の売れ筋順
-				System.out.println("3");
-				List<Item> categoryItems = itemRepository.findByCategoryIdAndDeleteFlag(categoryId, 0); // 該当カテゴリのアイテム取得
-				items = beanTools.copyEntityListToItemBeanList(categoryItems); // アイテムをBeanに変換
-				items.sort(new ItemBeanComparator()); // 売れ筋順に並び替え
-			} else {
-				// デフォルト：カテゴリ指定の新着順
-				System.out.println("4");
-				items = beanTools.getItemsByCategorySortedByLatest(categoryId);
-			}
-		} else {
-			if (sortType == 1) {
-				// 全カテゴリの新着順
-				System.out.println("5");
-				items = beanTools.getNewItems();
-			} else if (sortType == 2) {
-				// 全カテゴリの売れ筋順
-				System.out.println("6");
-				items = beanTools.copyEntityListToItemBeanList(itemRepository.findAllByDeleteFlag(0));
-				items.sort(new ItemBeanComparator());
-			} else {
-				// デフォルト：全カテゴリの新着順
-				System.out.println("7");
-				items = beanTools.getNewItems();
-			}
-		}
+
 		// モデルにデータを設定
-		System.out.println("8");
-		model.addAttribute("items", items);
-		System.out.println("9");
+		model.addAttribute("items", catchItemListOnSortService.creatItemList(sortType, categoryId, price));
 		model.addAttribute("sortType", sortType);
-		System.out.println("10");
 		model.addAttribute("categoryId", categoryId);
-		System.out.println("11");
+		model.addAttribute("price", price);
 		return "client/item/list"; // 商品一覧画面
 	}
 
@@ -152,7 +126,8 @@ public class ClientItemShowController {
 	 * トップ画面　価格別検索
 	 * 
 	 * @param model　
-	 * @param price
+	 * @param hiPrice
+   * @param loPrice
 	 * @return "client/item/list" 一覧表示画面
 	 */
 	@GetMapping("/client/item/list/price")
@@ -162,5 +137,4 @@ public class ClientItemShowController {
 
 		return "client/item/list";
 	}
-
 }

@@ -13,10 +13,10 @@
 
 	<div class="sorted_by">
 		<span th:if="${sortType==1}" th:text="#{sort.latest.str}"></span>
-		<a th:unless="${sortType==1}" th:href="@{/client/item/list/1(categoryId=${categoryId})}"
+		<a th:unless="${sortType==1}" th:href="@{/client/item/list/1(categoryId=${categoryId},price=${price})}"
 			th:text="#{sort.latest.str}"></a>
 		<span th:if="${sortType==2}" th:text="#{sort.hotsell.str}"></span>
-		<a th:unless="${sortType==2}" th:href="@{/client/item/list/2(categoryId=${categoryId})}"
+		<a th:unless="${sortType==2}" th:href="@{/client/item/list/2(categoryId=${categoryId},price=${price})}"
 			th:text="#{sort.hotsell.str}"></a>
 
 		<p th:text="#{msg.client.item.list.none}" th:if="${#lists.isEmpty(items)}"></p>

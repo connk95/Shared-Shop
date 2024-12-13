@@ -39,7 +39,7 @@ public class ClientBasketController {
 	HttpSession session;
 
 	/**
-	 * 在庫管理クラス
+	 * 在庫管理サービス
 	 */
 	@Autowired
 	BasketService basketService;
@@ -90,7 +90,7 @@ public class ClientBasketController {
 		basketService.deleteAllItem(session);
 		return "redirect:/client/basket/list";
 	}
-	
+
 	/**
 	 * Dummyメソッド
 	 * 終わったら削除
