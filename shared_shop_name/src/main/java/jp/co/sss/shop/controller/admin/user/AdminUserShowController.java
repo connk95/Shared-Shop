@@ -44,14 +44,6 @@ public class AdminUserShowController {
 	 */
 	@RequestMapping(path = "/admin/user/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showUserList(Model model, Pageable pageable) {
-
-		System.out.println(session.getAttribute("user"));
-		
-		UserBean userBean = new UserBean();
-		BeanUtils.copyProperties(session.getAttribute("user"), userBean);
-		System.out.println(userBean.getAuthority());
-		
-	    session.setAttribute("user", userBean);
 		
 		// 会員情報の登録数の取得と新規追加可否チェック
 		//count()メソッドを使用してレコード数を取得
