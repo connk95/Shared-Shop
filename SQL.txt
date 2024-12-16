@@ -9,10 +9,9 @@ CREATE TABLE tracking(
 
 INSERT INTO TRACKING (SHIPMENT_ID, ORDER_ID, STATUS, TRACKING_NUMBER)
 SELECT 
-    TO_CHAR(ROWNUM, 'FM00000') AS SHIPMENT_ID,       
+    TO_CHAR(ROWNUM, '0') AS SHIPMENT_ID,       
     ID,                                        
     '0' AS STATUS,                                 
-    LPAD(DBMS_RANDOM.VALUE(1, 9999999999), 10, '0')
 FROM ORDERS;
 
 
