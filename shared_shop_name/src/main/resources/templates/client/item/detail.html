@@ -21,39 +21,40 @@
 				<!--商品名-->
 				<dt>[[#{data.item.name}]]</dt>
 				<dd th:text="*{name}"></dd>
-				
+
 				<!--価格-->
 				<dt>[[#{data.item.price}]]</dt>
 				<dd th:text="*{price}"></dd>
-				
+
 				<!--在庫数（6以上：「在庫あり」、1以上5以下：「在庫数」、0：「在庫なし」-->
 				<dt>[[#{data.item.stock}]]</dt>
 				<dd th:if="*{stock >= 6 }" th:text="#{data.in.stock}"></dd>
 				<dd th:if="*{stock >= 1 and 5 >= stock }" th:text="*{stock}"></dd>
 				<dd th:if="*{stock == 0}" th:text="#{data.out.of.stock}"></dd>
-				
+
 				<!--商品カテゴリ-->
 				<dt>[[#{data.category}]]</dt>
 				<dd th:text="*{category.name}"></dd>
-				
+
 				<!--説明-->
 				<dt>[[#{data.description}]]</dt>
 				<dd th:text="*{description}"></dd>
 			</dl>
 		</div>
-		
+
 		<div class="detail_button_area">
 			<form th:action="@{/client/basket/add}" method="post" class="user_info_form" th:if="*{stock > 0}">
 				<input type="hidden" th:field="*{id}" />
 				<input type="submit" value="買い物かごに入れる" class="send_button" />
 			</form>
-			
+
 			<form th:action="@{/client/item/list/1}" method="post">
 				<input type="submit" value="戻る" class="back_button" />
 			</form>
 		</div>
 	</div>
 
+	<script type="text/javascript" th:src="@{/js/utilities.js}"></script>
 </body>
 
 </html>

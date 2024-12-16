@@ -3,12 +3,14 @@
 
 <head>
 	<meta charset="UTF-8" />
+	<script type="text/javascript" th:src="@{/js/utilities.js}"></script>
+	<!--		<script src="/shared_shop_name/src/main/resources/static/js/utilities.js"></script>-->
 </head>
 
 <body>
 	<aside th:fragment="layout-sidebar"
 		th:class="${session.user == null or session.user.authority == 2} ? ${'search'} : ${'admin_menu'}">
-		<!--/* 検索メニュー(非会員、一般会員用) */-->
+		<!-- 検索メニュー(非会員、一般会員用) -->
 		<div class="search_area" th:if="${session.user == null or session.user.authority == 2}">
 			<h2 th:class="title" th:text="#{category.select.title}"></h2>
 			<div class="form">
@@ -22,32 +24,46 @@
 					</select> <input type="submit" th:value="#{select}" />
 				</form>
 				<!-- 商品一覧画面上で表示 -->
-				<form th:unless="${sortType == null}" th:action="@{/client/item/list/} + ${sortType}">
+				<form th:unless="${sortType == null}" action="**?**">
 					<select name="categoryId">
 						<option th:value="#{constants.category.select.none.no}"
 							th:text="#{constants.category.select.none}"></option>
 						<option th:each="category: ${categories}" th:value="${category.id}" th:text="${category.name}"
 							th:selected="${category.id} == ${categoryId}"></option>
-					</select> <input type="submit" th:value="#{select}" />
+					</select>
+					<input type="hidden" name="price" th:value="${price}" />
+					<input type="submit" th:value="#{select}"
+						th:formaction="@{/client/item/list/{sortType}(categoryId=${categoryId},price=${price},sortType=${sortType})}" />
 				</form>
 			</div>
 			<!-- 価格別検索-->
 			<h2 th:class="title" th:text="#{price.select.title}"></h2>
-			<div class="form">
-				<form th:action="@{/client/item/list/3}">
-					<select name="price">
-						<option th:value="#{constants.price.select.none.no}" th:text="#{constants.price.select.none}">
-						</option>
-						<option th:value="0～1500" th:text="#{constants.price.select.0-1500}"></option>
-						<option th:value="1500～5000" th:text="#{constants.price.select.1500-5000}"></option>
-						<option th:value="5000～10000" th:text="#{constants.price.select.5000-10000}"></option>
-						<option th:value="10000～30000" th:text="#{constants.price.select.10000-30000}"></option>
-						<option th:value="30000" th:text="#{constants.price.select.over.30000}"></option>
-					</select> <input type="submit" th:value="#{select}" />
+
+			<div>
+				<form th:action="@{/client/item/list/price}">
+					<div class="wrapper">
+						<div class="price-input">
+							<div class="field">
+								<input type="number" class="input-min" value="0" name="loPrice">
+							</div>
+							<div class="separator">-</div>
+							<div class="field">
+								<input type="number" class="input-max" value="10000" name="hiPrice">
+							</div>
+							</select> <input type="submit" th:value="#{select}" />
+						</div>
+						<div class="slider">
+							<div class="progress"></div>
+						</div>
+						<div class="range-input">
+							<input type="range" class="range-min" min="0" max="10000" value="0" step="100">
+							<input type="range" class="range-max" min="0" max="10000" value="100000" step="100">
+						</div>
+					</div>
 				</form>
 			</div>
 
-			<!--/* メニュー(運用管理者、及びシステム管理者用) */-->
+			<!-- メニュー(運用管理者、及びシステム管理者用) -->
 			<div th:if="${session.user != null and session.user.authority != 2}">
 
 				<h2 th:class="title" th:text="#{admin.menu}"></h2>

@@ -2,8 +2,10 @@ package jp.co.sss.shop.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jp.co.sss.shop.bean.BasketBean;
@@ -16,6 +18,8 @@ import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
 import jp.co.sss.shop.form.ItemForm;
+import jp.co.sss.shop.repository.ItemRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * オブジェクト間でのフィールドコピー処理を行うクラス
@@ -24,6 +28,10 @@ import jp.co.sss.shop.form.ItemForm;
  */
 @Service
 public class BeanTools {
+
+	@Autowired
+	private ItemRepository itemRepository;
+
 	/**
 	 * ItemFormクラスの各フィールドの値をItemBeanクラスにコピー
 	 *
@@ -145,10 +153,15 @@ public class BeanTools {
 		for (Item entity : entityList) {
 			ItemBean bean = new ItemBean();
 			BeanUtils.copyProperties(entity, bean);
+			Integer totalQuantity = 0;
 
 			if (entity.getCategory() != null) {
 				bean.setCategoryName(entity.getCategory().getName());
 			}
+			for (OrderItem orderItem : entity.getOrderItemsList()) {
+				totalQuantity += orderItem.getQuantity();
+			}
+			bean.setTotalQuantity(totalQuantity);
 
 			beanList.add(bean);
 		}
@@ -191,7 +204,7 @@ public class BeanTools {
 		return orderItemBean;
 
 	}
-	
+
 	/**
 	 * OrderItemエンティティのリストから、OrderItemBeanのリストを生成
 	 * 
@@ -219,4 +232,34 @@ public class BeanTools {
 		}
 		return orderItemBeanList;
 	}
+
+	/**
+	 * Itemエンティティのリストから、ItemBeanのリストを生成
+	 * 新着順の商品一覧を取得
+	 *  @return 新着順の商品一覧
+	 *
+	 */
+	public List<ItemBean> getNewItems() {
+		List<Item> items = itemRepository.findNewItems(Constant.NOT_DELETED); // 新着順の商品取得
+		return convertToBeans(items);
+	}
+
+	/**
+	 * ItemエンティティをItemBeanに変換
+	 * @param items Itemエンティティのリスト
+	 * @return ItemBeanのリスト
+	 *
+	 */
+	private List<ItemBean> convertToBeans(List<Item> items) {
+		return items.stream().map(item -> {
+			ItemBean bean = new ItemBean();
+			bean.setId(item.getId());
+			bean.setName(item.getName());
+			bean.setPrice(item.getPrice());
+			bean.setImage(item.getImage());
+			bean.setCategoryName(item.getCategory().getName());
+			return bean;
+		}).collect(Collectors.toList());
+	}
+
 }
