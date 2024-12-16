@@ -46,6 +46,30 @@
 				<th>[[#{data.address}+#{data.address.phonenumber}]]</th>
 				<td class="value" th:text="*{phoneNumber}"></td>
 			</tr>
+			<tr th:if="${tracking.trackingNumber}">
+				<th>配達番号</th>
+				<td th:text="${tracking.trackingNumber}"></td>
+			</tr>
+			<tr>
+				<th>配達状況</th>
+				<td>
+					<form th:action="@{/admin/order/tracking/{id}(id=${order.id})}" method="post">
+						<div class="trackingSelector">
+							<select name="trackingStatus">
+								<option th:value="0" th:text="'注文済み'" th:selected="${tracking.status == 0}">注文済み
+								</option>
+								<option th:value="1" th:text="'発送済み'" th:selected="${tracking.status == 1}">発送済み
+								</option>
+								<option th:value="2" th:text="'配達中'" th:selected="${tracking.status == 2}">配達中
+								</option>
+								<option th:value="3" th:text="'配達済み'" th:selected="${tracking.status == 3}">配達済み
+								</option>
+							</select>
+							<input type="submit" class="trackingButton" value="判断" />
+						</div>
+					</form>
+				</td>
+			</tr>
 		</table>
 
 		<table class="list_table detail">
