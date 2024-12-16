@@ -19,7 +19,9 @@ import jp.co.sss.shop.bean.OrderItemBean;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
+import jp.co.sss.shop.entity.Tracking;
 import jp.co.sss.shop.repository.OrderRepository;
+import jp.co.sss.shop.repository.TrackingRepository;
 import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
@@ -41,6 +43,12 @@ public class ClientOrderShowController {
 	 */
 	@Autowired
 	OrderRepository orderRepository;
+	
+	/**
+	 * 配達情報
+	 */
+	@Autowired
+	TrackingRepository trackingRepository;
 
 	/**
 	 * セッション
@@ -123,10 +131,13 @@ public class ClientOrderShowController {
 		// 合計金額を算出
 		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(orderItemBeanList);
 		
+		Tracking tracking = trackingRepository.findByOrderId(orderBean.getId());
+						
 		// 注文情報をViewへ渡す
 		model.addAttribute("order", orderBean);
 		model.addAttribute("orderItemBeans", orderItemBeanList);
 		model.addAttribute("total", total);
+		model.addAttribute("tracking", tracking);
 		
 		return "client/order/detail";
 	}

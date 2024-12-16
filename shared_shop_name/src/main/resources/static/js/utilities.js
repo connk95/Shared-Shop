@@ -39,3 +39,44 @@ rangeInput.forEach((input) => {
 		}
 	});
 });
+
+
+const trackingArea = document.getElementById("tracking-area");
+
+if (trackingArea) {
+	let firstChild = trackingArea.firstElementChild;
+	let firstChildClass = firstChild.className;
+
+	const dots = document.getElementsByClassName("dot");
+	const progressBars = document.getElementsByClassName("progress-bar");
+	console.log(progressBars);
+
+	if (firstChildClass == "shipped") {
+		dots[1].style.background = "#0C84D9";
+		dots[1].style.color = "white";
+		progressBars[0].style.background = "#0C84D9";
+	} else if (firstChildClass == "delivery") {
+		dots[1].style.background = "#0C84D9";
+		dots[1].style.color = "white";
+		progressBars[0].style.background = "#0C84D9";
+		dots[2].style.background = "#0C84D9";
+		dots[2].style.color = "white";
+		progressBars[1].style.background = "#0C84D9";
+	} else if (firstChildClass == "delivered") {
+		dots[1].style.background = "#0C84D9";
+		dots[1].style.color = "white";
+		progressBars[0].style.background = "#0C84D9";
+		dots[2].style.background = "#0C84D9";
+		dots[2].style.color = "white";
+		progressBars[1].style.background = "#0C84D9";
+		dots[3].style.background = "#0C84D9";
+		dots[3].style.color = "white";
+		progressBars[2].style.background = "#0C84D9";
+	}
+
+}
+
+
+
+
+

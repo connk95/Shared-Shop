@@ -45,66 +45,89 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
 
-	/**
-	 *新着順の商品一覧を取得
+	/** 1
+	 * 売れ筋順検索 全商品 (非会員・一般会員機能で利用)
+	 * @param deleteFlag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i INNER JOIN i.category c LEFT JOIN i.orderItemList oi WHERE i.deleteFlag =:deleteFlag GROUP BY i ORDER BY SUM(oi.quantity) DESC NULLS LAST,i.id DESC")
+	List<Item> findByDeleteFlagOrderByTotalQueantityDescAndIdDesc(@Param(value = "deleteFlag") int deleteFlag);
+
+	/** 2
+	 * 新着順検索 全商品 (非会員・一般会員機能で利用)
+	 * @param deleteFlag 削除フラグ
 	 * @return 商品エンティティ
 	 */
 	@Query("SELECT i FROM Item i WHERE i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC,i.id DESC")
-	List<Item> findNewItems(@Param("deleteFlag") int deleteFlag);
+	List<Item> findByDeleteFlagOrderByInsertDateDescAndIdDesc(@Param("deleteFlag") int deleteFlag);
 
-	/**
-	 * カテゴリ指定の新着順を検索
+	/** 3
+	 * カテゴリ別検索 売れ筋順 (非会員・一般会員機能で利用)
+	 * @param categoryId カテゴリーID
+	 * @param deleteFlag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i INNER JOIN i.category c LEFT JOIN i.orderItemList oi WHERE i.category.id = :categoryId AND i.deleteFlag =:deleteFlag GROUP BY i ORDER BY SUM(oi.quantity) DESC NULLS LAST,i.id DESC")
+	List<Item> findByCategoryIdAndDeleteFlagOrderByTotalQueantityDescAndIdDesc(
+			@Param(value = "categoryId") Integer categoryId, @Param(value = "deleteFlag") int deleteFlag);
+
+	/** 4
+	 * カテゴリ別検索 新着順 (非会員・一般会員機能で利用)
 	 * @param categoryId カテゴリーID
 	 * @return 商品エンティティ
 	 */
-	List<Item> findByCategoryIdAndDeleteFlagOrderByInsertDateDesc(Integer categoryId,int deleteFlag);
+	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC,i.id DESC")
+	List<Item> findByCategoryIdAndDeleteFlagOrderByInsertDateDescAndIdDesc(
+			@Param(value = "categoryId") Integer categoryId, @Param(value = "deleteFlag") int deleteFlag);
 
-	/**
-	 * カテゴリ指定の売れ筋順を検索
+	/** 5
+	 * 価格別検索 売れ筋順 (非会員・一般会員機能で利用)
+	 * @param min 下限価格
+	 * @param max 上限価格
+	 * @param deleteFlag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i INNER JOIN i.category c LEFT JOIN i.orderItemList oi WHERE i.price >= :min AND i.price <= :max AND i.deleteFlag =:deleteFlag GROUP BY i ORDER BY SUM(oi.quantity) DESC NULLS LAST,i.id DESC")
+	List<Item> findByPriceMinAndPriceMaxAndDeleteFlagOrderByTotalQueantityDescAndIdDesc(
+			@Param(value = "min") Integer min, @Param(value = "max") Integer max,
+			@Param(value = "deleteFlag") int deleteFlag);
+
+	/** 6
+	 * 価格別検索 新着順 (非会員・一般会員機能で利用)
+	 * @param min 下限価格
+	 * @param max 上限価格
+	 * @param deleteFlag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i  WHERE i.price >= :min AND i.price <= :max AND i.deleteFlag =:deleteFlag GROUP BY i ORDER BY i.insertDate DESC,i.id DESC")
+	List<Item> findByPriceMinAndPriceMaxAndDeleteFlagOrderByInsertDateDescAndIdDesc(
+			@Param(value = "min") Integer min, @Param(value = "max") Integer max,
+			@Param(value = "deleteFlag") int deleteFlag);
+
+	/** 7
+	 * カテゴリ別＆価格別検索 売れ筋順 (非会員・一般会員機能で利用)
+	 * @param min 下限価格
+	 * @param max 上限価格
+	 * @param deleteFlag 削除フラグ
+	 * @return 商品エンティティ
+	 */
+	@Query("SELECT i FROM Item i INNER JOIN i.category c LEFT JOIN i.orderItemList oi WHERE i.category.id = :categoryId AND i.price >= :min AND i.price <= :max AND i.deleteFlag =:deleteFlag GROUP BY i ORDER BY SUM(oi.quantity) DESC NULLS LAST,i.id DESC")
+	List<Item> findByCategoryIdAndPriceMinAndPriceMaxAndDeleteFlagOrderByTotalQueantityDescAndIdDesc(
+			@Param("categoryId") Integer categoryId,
+			@Param(value = "min") Integer min, @Param(value = "max") Integer max,
+			@Param(value = "deleteFlag") int deleteFlag);
+
+	/** 8
+	 * カテゴリ別＆価格別検索 新着順 (非会員・一般会員機能で利用)
 	 * @param categoryId カテゴリーID
+	 * @param min 下限価格
+	 * @param max 上限価格
+	 * @param deleteFlag 削除フラグ
 	 * @return 商品エンティティ
 	 */
-	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.deleteFlag = :deleteFlag")
-	List<Item> findByCategoryIdAndDeleteFlag(@Param("categoryId") Integer categoryId, @Param("deleteFlag") int deleteFlag);
-
-	/**
-	 * 全検索
-	 * @param deleteFrag 削除フラグ
-	 * @return 商品エンティティ
-	 */
-	List<Item> findAllByDeleteFlag(int deleteFrag);
-
-	/**
-	 * 価格を条件に検索（\0-1500 ～ \10000-30000を選択後、条件を検索）
-	 * @param price
-	 * @return 商品エンティティ
-	 */
-	@Query("SELECT i FROM Item i WHERE i.price >=:min AND i.price<=:max AND i.deleteFlag = :deleteFlag Order By i.price Asc")
-	public List<Item> findByPriceQuery(@Param("min") Integer min, @Param("max") Integer max,@Param("deleteFlag") int deleteFlag);
-
-	/**
-	 * 価格を条件に検索（\30000以上を選択後、条件を検索）
-	 * @param over
-	 * @return 商品エンティティ
-	 */
-	@Query("SELECT i FROM Item i WHERE i.price >=:over AND i.deleteFlag = :deleteFlag Order By i.price Asc")
-	public List<Item> findByOverPriceQuery(@Param("over") Integer over, @Param("deleteFlag") int deleteFlag);
-
-	/**
-	 * 多分つかわない
-	 * 価格を条件に検索（-指定なし-を選択後、全件検索）
-	 * @return 商品エンティティ
-	 */
-	List<Item> findAllByOrderByPriceAsc();
-
-	@Query("SELECT i FROM Item i WHERE :loPrice <= i.price AND i.price <= :hiPrice ORDER BY i.price ASC")
-	public List<Item> findAllByPriceRange(@Param("loPrice") Integer loPrice, @Param("hiPrice") Integer hiPrice);
-
-
-	//価格が30,000以上でカテゴリ検索（新着順）
-	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.price >= :over AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC, i.id DESC")
-	List<Item> findByCategoryIdAndPriceOverOrderByInsertDateDesc(@Param("categoryId") Integer categoryId, @Param("over") Integer price, @Param("deleteFlag") int deleteFlag);
-	// 価格が30,000以下でカテゴリ検索（新着順）
 	@Query("SELECT i FROM Item i WHERE i.category.id = :categoryId AND i.price >= :min AND i.price <= :max AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC, i.id DESC")
-	List<Item> findByCategoryIdAndPriceUnderOrderByInsertDateDesc(@Param("categoryId") Integer categoryId, @Param("min") Integer min, @Param("max") Integer max, @Param("deleteFlag") int deleteFlag);
+	List<Item> findByCategoryIdAndPriceMinAndPriceMaxOrderByInsertDateDescAndIdDesc(
+			@Param("categoryId") Integer categoryId,
+			@Param("min") Integer min, @Param("max") Integer max, @Param("deleteFlag") int deleteFlag);
+
 }
