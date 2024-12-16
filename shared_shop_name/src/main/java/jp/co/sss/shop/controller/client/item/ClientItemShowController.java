@@ -1,5 +1,6 @@
 package jp.co.sss.shop.controller.client.item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.entity.Item;
+import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.repository.ItemRepository;
-import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.CatchItemListOnSortService;
 import jp.co.sss.shop.util.Constant;
-import jp.co.sss.shop.util.ItemBeanComparator;
 
 /**
  * 商品管理 一覧表示機能(一般会員用)のコントローラクラス
@@ -29,19 +30,23 @@ import jp.co.sss.shop.util.ItemBeanComparator;
 @Controller
 
 public class ClientItemShowController {
-
-	@Autowired
-	UserRepository userRepository;
-
+	/**
+	 * セッション
+	 */
 	@Autowired
 	HttpSession session;
 
 	/**
 	 * 商品情報
 	 */
-
 	@Autowired
 	ItemRepository itemRepository;
+
+	/**
+	 * 注文情報
+	 */
+	@Autowired
+	OrderRepository orderRepository;
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
@@ -63,23 +68,21 @@ public class ClientItemShowController {
 	*/
 	@RequestMapping(path = "/", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showTopPage(Model model) {
-		// 商品一覧を「売れ筋順」で取得
-		List<ItemBean> items = beanTools
-				.copyEntityListToItemBeanList(itemRepository.findAllByDeleteFlag(Constant.NOT_DELETED));
-		items.sort(new ItemBeanComparator());
-		int totalQuantity = 0;
-		for (ItemBean itemBean : items) {
-			totalQuantity += itemBean.getTotalQuantity();
-		}
+		// 注文一覧の取得
+		List<Order> order = orderRepository.findAll();
 
-		// 売れ筋順の商品がない場合は「新着順」で取得
-		if (totalQuantity == 0) {
-			items = beanTools.getNewItems();
-			System.out.println("新着順");
-			model.addAttribute("sortType", 1); // 新着順
+		List<ItemBean> items = new ArrayList<ItemBean>();// 注文情報格納用ビーンリスト
+
+		if (order.size() == 0) {
+			// 注文が一つもないなら新着順で取得
+			items = beanTools.copyEntityListToItemBeanList(
+					itemRepository.findByDeleteFlagOrderByInsertDateDescAndIdDesc(Constant.NOT_DELETED));
+			model.addAttribute("sortType", Constant.SEARCH_CATEGORY_ID_INSERT_DATE); // 新着順
 		} else {
-			model.addAttribute("sortType", 2); // 売れ筋順
-
+			//注文が一つ以上あるなら売れ筋準で取得
+			items = beanTools.copyEntityListToItemBeanList(
+					itemRepository.findByDeleteFlagOrderByTotalQueantityDescAndIdDesc(Constant.NOT_DELETED));
+			model.addAttribute("sortType", Constant.SEARCH_CATEGORY_ID_TOTAL_QUANTITY); // 売れ筋順
 		}
 
 		// 商品一覧を画面に渡す
@@ -100,14 +103,16 @@ public class ClientItemShowController {
 	@RequestMapping(path = "client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientItemList(@PathVariable("sortType") int sortType,
 			@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
-			@RequestParam(value = "price", required = false, defaultValue = "0") String price,
-			Model model) { //categoryId が0の場合は全カテゴリで表示されるように設定
+			@RequestParam(value = "loPrice", required = false, defaultValue = "0") Integer loPrice,
+			@RequestParam(value = "hiPrice", required = false, defaultValue = "0") Integer hiPrice,
+			Model model) { //categoryId・price が0の場合は全商品が表示されるように設定
 
 		// モデルにデータを設定
-		model.addAttribute("items", catchItemListOnSortService.creatItemList(sortType, categoryId, price));
+		model.addAttribute("items", catchItemListOnSortService.creatItemList(sortType, categoryId, loPrice, hiPrice));
 		model.addAttribute("sortType", sortType);
 		model.addAttribute("categoryId", categoryId);
-		model.addAttribute("price", price);
+		model.addAttribute("loPrice", loPrice);
+		model.addAttribute("hiPrice", hiPrice);
 		return "client/item/list"; // 商品一覧画面
 	}
 
@@ -122,19 +127,4 @@ public class ClientItemShowController {
 		return "client/item/detail";
 	}
 
-	/**
-	 * トップ画面　価格別検索
-	 * 
-	 * @param model　
-	 * @param hiPrice
-   * @param loPrice
-	 * @return "client/item/list" 一覧表示画面
-	 */
-	@GetMapping("/client/item/list/price")
-	public String showPriceRange(@RequestParam Integer loPrice, @RequestParam Integer hiPrice, Model model) {
-		model.addAttribute("items",
-				beanTools.copyEntityListToItemBeanList(itemRepository.findAllByPriceRange(loPrice, hiPrice)));
-
-		return "client/item/list";
-	}
 }

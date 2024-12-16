@@ -43,6 +43,40 @@
 				<td th:text="${order.phoneNumber}"></td>
 			</tr>
 		</table>
+
+		<div class="tracking-wrapper">
+			<div id="tracking-area" th:switch="${tracking.status}">
+				<div th:case="0" class="accepted"></div>
+				<div th:case="1" class="shipped"></div>
+				<div th:case="2" class="delivery"></div>
+				<div th:case="3" class="delivered"></div>
+				<div class="dot one">1</div>
+				<div class="dot two">2</div>
+				<div class="dot three">3</div>
+				<div class="dot four">4</div>
+				<div class="progress-bar first"></div>
+				<div class="progress-bar second"></div>
+				<div class="progress-bar third"></div>
+				<div class="message message-1">
+					注文済み
+					<div>
+						<div class="message message-2">発送済み<div>
+								<div class="message message-3">配達中<div>
+										<div class="message message-4">配達済み<div>
+											</div>
+											<div th:if="${tracking.trackingNumber}" class="status code">配達番号: <a
+													href="#" th:text="${tracking.trackingNumber}"></a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<table class="list_table detail">
 			<tr>
 				<th>[[#{data.item.name}]]</th>
@@ -65,9 +99,8 @@
 		<form th:action="@{/client/order/list}" method="post" class="detail_button_area">
 			<input type="submit" value="戻る" class="back_button" />
 		</form>
-	</div>
 
-	<script type="text/javascript" th:src="@{/js/utilities.js}"></script>
+		<script type="text/javascript" th:src="@{/js/utilities.js}"></script>
 </body>
 
 </html>

@@ -3,22 +3,25 @@ package jp.co.sss.shop.controller.admin.order;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.OrderBean;
 import jp.co.sss.shop.bean.OrderItemBean;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
+import jp.co.sss.shop.entity.Tracking;
 import jp.co.sss.shop.repository.OrderRepository;
+import jp.co.sss.shop.repository.TrackingRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
 
@@ -37,6 +40,12 @@ public class AdminOrderShowController {
 	 */
 	@Autowired
 	OrderRepository orderRepository;
+
+	/**
+	 * 配達情報
+	 */
+	@Autowired
+	TrackingRepository trackingRepository;
 
 	/**
 	 * セッション
@@ -101,7 +110,7 @@ public class AdminOrderShowController {
 	 * @param model Viewとの値受渡し
 	 * @return "admin/order/detail" 詳細画面　表示
 	 */
-	@RequestMapping(path = "/admin/order/detail/{id}")
+	@RequestMapping(path = "/admin/order/detail/{id}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showOrder(@PathVariable int id, Model model) {
 
 		// 選択された注文情報に該当する情報を取得
@@ -116,12 +125,35 @@ public class AdminOrderShowController {
 		// 合計金額を算出
 		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(orderItemBeanList);
 
+		Tracking tracking = trackingRepository.findByOrderId(orderBean.getId());
+
 		// 注文情報をViewへ渡す
 		model.addAttribute("order", orderBean);
 		model.addAttribute("orderItemBeans", orderItemBeanList);
 		model.addAttribute("total", total);
+		model.addAttribute("tracking", tracking);
 
 		return "admin/order/detail";
+	}
+
+	@PostMapping(path = "/admin/order/tracking/{id}")
+	public String updateTracking(@PathVariable int id,
+			@RequestParam(value = "trackingStatus", required = false) Integer trackingStatus) {
+
+		Tracking tracking = trackingRepository.findByOrderId(id);
+
+		if (trackingStatus != null) {
+			tracking.setStatus(trackingStatus);
+
+			if (tracking.getTrackingNumber() == null) {
+				String trackingNumber = String.valueOf((long) (Math.random() * 9_000_000_000L) + 1_000_000_000L);
+				tracking.setTrackingNumber(trackingNumber);
+			}
+
+			trackingRepository.save(tracking);
+		}
+
+		return "redirect:/admin/order/detail/" + id;
 	}
 
 }
