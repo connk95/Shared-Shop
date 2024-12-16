@@ -53,7 +53,32 @@ public class Constant {
 	public static final int AUTH_ADMIN = 1;
 	/** 権限の値(一般会員) */
 	public static final int AUTH_CLIENT = 2;
-	
+
 	/** 買い物かご注文数初期値 */
 	public static final int DEFAULT_BUSKET_ORDER_NUM = 1;
+
+	/** カテゴリ別検索 未選択初期値 */
+	public static final int DEFAULT_SEARCH_CATEGORY_ID = 0;
+	
+	/** カテゴリ別検索 新着順 */
+	public static final int SEARCH_CATEGORY_ID_INSERT_DATE = 1;
+	
+	/** カテゴリ別検索 売れ筋順 */
+	public static final int SEARCH_CATEGORY_ID_TOTAL_QUANTITY = 2;
+
+	/** 価格別検索 未選択初期値 */
+	public static final Integer DEFAULT_PRICE_SEARCH_NUM = 0;
+	
+	/** SwitchFlag 検索処理 選択なし */
+	public static final int NOT_SELECTED = 0;
+	
+	/** SwitchFlag 検索処理 価格別 */
+	public static final int SELECT_PRICE = 1;
+	
+	/** SwitchFlag 検索処理 カテゴリ別 */
+	public static final int SELECT_CATEGORY_ID = 2;
+	
+	/** SwitchFlag 検索処理 選択なし */
+	public static final int SELECT_CATEGORY_ID_AND_PRICE = 3;
+	
 }

@@ -31,16 +31,18 @@
 						<option th:each="category: ${categories}" th:value="${category.id}" th:text="${category.name}"
 							th:selected="${category.id} == ${categoryId}"></option>
 					</select>
-					<input type="hidden" name="price" th:value="${price}" />
+					<input type="hidden" name="loPrice" th:value="${loPrice}" />
+					<input type="hidden" name="hiPrice" th:value="${hiPrice}" />
 					<input type="submit" th:value="#{select}"
-						th:formaction="@{/client/item/list/{sortType}(categoryId=${categoryId},price=${price},sortType=${sortType})}" />
+						th:formaction="@{/client/item/list/{sortType}(categoryId=${categoryId},loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}" />
 				</form>
 			</div>
 			<!-- 価格別検索-->
 			<h2 th:class="title" th:text="#{price.select.title}"></h2>
 
 			<div>
-				<form th:action="@{/client/item/list/price}">
+				<form
+					th:action="@{/client/item/list/{sortType}(categoryId=${categoryId},loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
 					<div class="wrapper">
 						<div class="price-input">
 							<div class="field">
@@ -50,7 +52,9 @@
 							<div class="field">
 								<input type="number" class="input-max" value="10000" name="hiPrice">
 							</div>
-							</select> <input type="submit" th:value="#{select}" />
+							</select>
+							<input type="hidden" name="categoryId" th:value="${categoryId}" />
+							<input type="submit" th:value="#{select}" />
 						</div>
 						<div class="slider">
 							<div class="progress"></div>
