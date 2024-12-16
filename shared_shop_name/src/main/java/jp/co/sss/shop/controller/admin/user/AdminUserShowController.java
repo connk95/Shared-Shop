@@ -1,7 +1,5 @@
 package jp.co.sss.shop.controller.admin.user;
 
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.repository.UserRepository;
@@ -45,7 +44,7 @@ public class AdminUserShowController {
 	 */
 	@RequestMapping(path = "/admin/user/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showUserList(Model model, Pageable pageable) {
-
+		
 		// 会員情報の登録数の取得と新規追加可否チェック
 		//count()メソッドを使用してレコード数を取得
 		Long usersCount = userRepository.count();
