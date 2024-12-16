@@ -12,7 +12,6 @@ SELECT
     TO_CHAR(ROWNUM, '0') AS SHIPMENT_ID,       
     ID,                                        
     '0' AS STATUS,                                 
-    '0' AS TRACKING_NUMBER
 FROM ORDERS;
 
 
