@@ -24,11 +24,13 @@ import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.entity.Order;
 import jp.co.sss.shop.entity.OrderItem;
+import jp.co.sss.shop.entity.Tracking;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.OrderForm;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.repository.OrderRepository;
+import jp.co.sss.shop.repository.TrackingRepository;
 import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
@@ -63,6 +65,12 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
+	
+	/**
+	 *配達情報
+	 */
+	@Autowired
+	TrackingRepository trackingRepository;
 
 	/**
 	 * セッション
@@ -211,6 +219,14 @@ public class ClientOrderRegistController {
 			
 			orderItemRepository.save(orderItem);
 		});
+		
+		Tracking tracking = new Tracking();
+		tracking.setOrder(order);
+		tracking.setStatus(0);
+		tracking.setTrackingNumber(null);
+		
+		trackingRepository.save(tracking);
+		
 		// 一時データをクリアする
 		status.setComplete();
 		return "client/order/complete";
