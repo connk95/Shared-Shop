@@ -38,6 +38,18 @@ public class CatchItemListOnSortService {
 	 * @return 商品リスト
 	 */
 	public List<ItemBean> creatItemList(int sortType, Integer categoryId, Integer loPrice, Integer hiPrice) {
+		// 上限価格、下限価格、カテゴリIDがNullだった場合は初期値で初期化を行う
+		if (loPrice == null) {
+			loPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
+		}
+		if (hiPrice == null) {
+			hiPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
+			loPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
+		}
+		if (categoryId == null) {
+			categoryId =Constant.DEFAULT_SEARCH_CATEGORY_ID;
+		}
+		
 		int switchFlag = Constant.NOT_SELECTED;//カテゴリ検索も価格別検索も選択されていない
 		if (categoryId == Constant.DEFAULT_SEARCH_CATEGORY_ID) {
 			if (hiPrice != Constant.DEFAULT_PRICE_SEARCH_NUM) {

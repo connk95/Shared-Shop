@@ -33,13 +33,14 @@
 				<span class="input_value" th:text="*{phoneNumber}"></span>
 			</li>
 		</ul>
-		<form th:action="@{/client/user/delete/complete}"  method="post" class="user_info_form">
+		<form th:action="@{/client/user/delete/complete}" method="post" class="user_info_form">
 			<input type="submit" value="退会" class="send_button delete" />
 		</form>
 		<form th:action="@{/client/user/detail}" method="post">
 			<input type="submit" value="戻る" class="back_button" />
 		</form>
 	</div>
+	<script type="text/javascript" th:src="@{/js/utilities.js}"></script>
 </body>
 
 </html>
