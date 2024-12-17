@@ -40,8 +40,31 @@
 			<!-- 価格別検索 -->
 			<h2 th:class="title" th:text="#{price.select.title}"></h2>
 			<div>
-				<form
-					th:action="@{/client/item/list/{sortType}(categoryId=${categoryId},loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
+				<!-- 商品一覧画面以外で表示 -->
+				<form th:if="${sortType == null}" th:action="@{/client/item/list/1(loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
+					<div class="wrapper">
+						<div class="price-input">
+							<div class="field">
+								<input type="number" class="input-min" value="0" name="loPrice">
+							</div>
+							<div class="separator">-</div>
+							<div class="field">
+								<input type="number" class="input-max" value="10000" name="hiPrice">
+							</div>
+							</select>
+							<input type="submit" th:value="#{select}" />
+						</div>
+						<div class="slider">
+							<div class="progress"></div>
+						</div>
+						<div class="range-input">
+							<input type="range" class="range-min" min="0" max="10000" value="0" step="100">
+							<input type="range" class="range-max" min="0" max="10000" value="100000" step="100">
+						</div>
+					</div>
+				</form>
+				<!-- 商品一覧画面上で表示 -->
+				<form th:unless="${sortType == null}" th:action="@{/client/item/list/{sortType}(categoryId=${categoryId},loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
 					<div class="wrapper">
 						<div class="price-input">
 							<div class="field">
