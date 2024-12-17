@@ -1,0 +1,23 @@
+CREATE TABLE tracking(
+    id VARCHAR(5),
+    order_id NUMBER(6,0),
+    status VARCHAR (5),
+    tracking_number VARCHAR(10) UNIQUE,
+    PRIMARY KEY(shipment_id),
+    FOREIGN KEY(order_id) REFERENCES orders(id)
+);
+
+INSERT INTO TRACKING (ID, ORDER_ID, STATUS, TRACKING_NUMBER)
+SELECT 
+    TO_CHAR(ROWNUM, '0') AS SHIPMENT_ID,       
+    ID,                                        
+    '0' AS STATUS,                                 
+FROM ORDERS;
+
+
+CREATE SEQUENCE SHIPMENT_SEQ
+START WITH 1          
+INCREMENT BY 1        
+NOCACHE;           
+
+COMMIT;
