@@ -18,15 +18,16 @@ public class Tracking {
 	@SequenceGenerator(name = "seq_tracking_gen", sequenceName = "seq_tracking", allocationSize = 1)
 	private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "order_id", referencedColumnName = "id")
-	private Order order;
+    @ManyToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
+    private Order order;
 
-	@Column
-	private Integer status;
+    @Column
+    private Integer status;
 
-	@Column
-	private String trackingNumber;
+    @Column
+    private String trackingNumber;
+
 
 	/**
 	 * 配達IDの取得
