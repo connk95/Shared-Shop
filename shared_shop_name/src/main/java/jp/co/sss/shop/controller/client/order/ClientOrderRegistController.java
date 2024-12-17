@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -32,6 +34,7 @@ import jp.co.sss.shop.repository.OrderItemRepository;
 import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.repository.TrackingRepository;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.service.BasketService;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
 
@@ -65,7 +68,7 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
-	
+
 	/**
 	 *配達情報
 	 */
@@ -89,7 +92,13 @@ public class ClientOrderRegistController {
 	 */
 	@Autowired
 	BeanTools beanTools;
-	
+
+	/**
+	 * 在庫管理サービス
+	 */
+	@Autowired
+	BasketService basketService;
+
 	/**
 	 * コントローラー全体で使用するために
 	 * orderFormを初期化する
@@ -98,7 +107,17 @@ public class ClientOrderRegistController {
 	 */
 	@ModelAttribute("orderForm")
 	public OrderForm setupOrderForm() {
-		return new OrderForm();
+		UserBean userBean = (UserBean) session.getAttribute("user");
+		Integer userId = userBean.getId();
+		User user = userRepository.findById(userId).orElse(null);
+		OrderForm orderForm = new OrderForm();
+
+		orderForm.setAddress(user.getAddress());
+		orderForm.setName(user.getName());
+		orderForm.setPhoneNumber(user.getPhoneNumber());
+		orderForm.setPostalCode(user.getPostalCode());
+
+		return orderForm;
 	}
 
 	/**
@@ -118,18 +137,32 @@ public class ClientOrderRegistController {
 
 		return new ArrayList<>(orderItemBeans);
 	}
-	
+
 	/**
 	 * 住所情報入力
 	 *
 	 * @return 住所情報を入力画面
 	 */
-	@RequestMapping(path = "/client/order/address/input", method = { RequestMethod.GET, RequestMethod.POST })
-	public String orderAddressInput(@ModelAttribute OrderForm orderForm, Model model) {
+	@GetMapping("/client/order/address/input")
+	public String getOrderAddressInput(@ModelAttribute OrderForm orderForm) {
 
 		return "client/order/address_input";
 	}
-	
+
+	/**
+	 * 住所情報入力
+	 * @param orderForm注文フォーム
+	 * @return 支払方法入力画面
+	 */
+	@PostMapping("/client/order/address/input")
+	public String postOrderAddressInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result) {
+		if (result.hasErrors()) {
+			return "client/order/address_input";
+		}
+
+		return "redirect:/client/order/payment/input";
+	}
+
 	/**
 	 * 住所情報・支払方法・確認画面から買い物かごへ戻る
 	 *
@@ -137,35 +170,71 @@ public class ClientOrderRegistController {
 	 */
 	@RequestMapping(path = "/client/order/payment/back", method = { RequestMethod.GET, RequestMethod.POST })
 	public String orderAddressBack(@ModelAttribute OrderForm orderForm, Model model) {
-		
+
 		return "client/order/address_input";
 	}
 
 	/**
 	 * 支払方法入力
 	 *
-	 * @return 支払方法画面
+	 * @return 支払方法入力画面
 	 */
-	@RequestMapping(path = "/client/order/payment/input", method = { RequestMethod.GET, RequestMethod.POST })
-	public String orderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result, Model model) {
+	@GetMapping("/client/order/payment/input")
+	public String getOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result) {
 		if (result.hasErrors()) {
 			return "client/order/address_input";
 		}
 
 		return "client/order/payment_input";
 	}
-	
+
+	/**
+	 * 支払方法入力
+	 *
+	 * @param orderForm注文フォーム
+	 * @return 支払方法画面
+	 */
+	@PostMapping(path = "/client/order/payment/input")
+	public String postOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+
+			return "client/order/payment_input";
+		}
+
+		return "redirect:/client/order/check";
+	}
+
 	/**
 	 * 注文確認
 	 *
 	 * @return 注文確認画面
 	 */
-	@RequestMapping(path = "/client/order/check", method = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping("/client/order/check")
+	public String getOrderCheck(@Valid @ModelAttribute OrderForm orderForm, OrderBean orderBean, BindingResult result,
+			Model model) {
+		if (result.hasErrors()) {
+
+			return "client/order/payment_input";
+		}
+
+		model.addAttribute("total", orderBean.getTotal());
+
+		return "client/order/check";
+	}
+
+	/**
+	 * 注文確認画面
+	 *
+	 * @param orderForm注文フォーム
+	 * @return 注文完了画面
+	 */
+	@PostMapping("/client/order/check")
 	public String orderCheck(@Valid @ModelAttribute OrderForm orderForm,
 			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
-			return "client/order/payment_input";
+
+			return "client/order/check";
 		}
 
 		// 一時的に注文を orderBean に保存する
@@ -184,13 +253,21 @@ public class ClientOrderRegistController {
 		return "client/order/check";
 	}
 
-	@RequestMapping(path = "/client/order/complete", method = { RequestMethod.GET, RequestMethod.POST })
-	public String orderComplete(@Valid @ModelAttribute OrderForm orderForm, @ModelAttribute OrderBean orderBean,
-			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, BindingResult result, Model model, SessionStatus status) {
+	/**
+	 * 注文完了画面
+	 *
+	 * @param orderForm注文フォーム
+	 * @return 注文完了画面
+	 */
+	@GetMapping(path = "/client/order/complete")
+	public String postOrderComplete(@Valid @ModelAttribute OrderForm orderForm, @ModelAttribute OrderBean orderBean,
+			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, BindingResult result, Model model,
+			SessionStatus status) {
 		if (result.hasErrors()) {
+
 			return "client/order/check";
 		}
-		
+
 		// 注文を作成し、orderBean からコピーする
 		Order order = new Order();
 		BeanUtils.copyProperties(orderBean, order);
@@ -205,30 +282,32 @@ public class ClientOrderRegistController {
 		Object basketBeans = session.getAttribute("basketBeans");
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
 		basketBeanList.forEach(basketItem -> {
-			
+
 			OrderItem orderItem = new OrderItem();
 			orderItem.setQuantity(basketItem.getOrderNum());
-			
+
 			Integer itemId = basketItem.getId();
 			Item item = itemRepository.findById(itemId).orElse(null);
 			orderItem.setItem(item);
-			
+
 			orderItem.setOrder(order);
-			
+
 			orderItem.setPrice(item.getPrice());
-			
+
 			orderItemRepository.save(orderItem);
 		});
-		
+
+		// 配達情報を作成
 		Tracking tracking = new Tracking();
 		tracking.setOrder(order);
 		tracking.setStatus(0);
 		tracking.setTrackingNumber(null);
-		
+
 		trackingRepository.save(tracking);
-		
+
 		// 一時データをクリアする
 		status.setComplete();
+		basketService.deleteAllItem(session);
 		return "client/order/complete";
 	}
 }

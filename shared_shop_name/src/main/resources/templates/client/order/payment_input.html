@@ -17,46 +17,36 @@
 			<ul class="payment_method_select">
 				<li>
 					<label class="radio_label">
-						<input type="radio" name="payMethod" value="1" th:if="${payMethod == 1}" checked="checked"
-							onclick=" payChange();" />
 						<input type="radio" name="payMethod" value="1"
-							th:unless="${payMethod == 1}" />[[#{paymethod.credit.str}]]
+							th:checked="${payMethod == null or payMethod == 1}" onclick="payChange();" />
+						[[#{paymethod.credit.str}]]
 					</label>
 				</li>
 				<li>
 					<label class="radio_label">
-						<input type="radio" name="payMethod" value="2" th:if="${payMethod == 2}" checked="checked"
-							onclick=" payChange();" />
-						<input type="radio" name="payMethod" value="2"
-							th:unless="${payMethod == 2}" />[[#{paymethod.bank.str}]]
+						<input type="radio" name="payMethod" value="2" th:checked="${payMethod == 2}" />
+						[[#{paymethod.bank.str}]]
 					</label>
 				</li>
 				<li>
 					<label class="radio_label">
-						<input type="radio" name="payMethod" value="3" th:if="${payMethod  == 3}" checked="checked"
-							onclick=" payChange();" />
-						<input type="radio" name="payMethod" value="3"
-							th:unless="${payMethod  == 3}" />[[#{paymethod.onarrival.str}]]
+						<input type="radio" name="payMethod" value="3" th:checked="${payMethod == 3}" />
+						[[#{paymethod.onarrival.str}]]
 					</label>
 				</li>
 				<li>
 					<label class="radio_label">
-						<input type="radio" name="payMethod" value="4" th:if="${payMethod == 4}" checked="checked"
-							onclick=" payChange();" />
-						<input type="radio" name="payMethod" value="4"
-							th:unless="${payMethod == 4}" />[[#{paymethod.emoney.str}]]
+						<input type="radio" name="payMethod" value="4" th:checked="${payMethod == 4}" />
+						[[#{paymethod.emoney.str}]]
 					</label>
 				</li>
 				<li>
 					<label class="radio_label">
-						<input type="radio" name="payMethod" value="5" th:if="${payMethod == 5}" checked="checked"
-							onclick=" payChange();" />
-						<input type="radio" name="payMethod" value="5"
-							th:unless="${payMethod == 5}" />[[#{paymethod.convenience.str}]]
+						<input type="radio" name="payMethod" value="5" th:checked="${payMethod == 5}" />
+						[[#{paymethod.convenience.str}]]
 					</label>
 				</li>
 			</ul>
-
 			<input type="submit" class="send_button" value="次へ" />
 
 		</form>
