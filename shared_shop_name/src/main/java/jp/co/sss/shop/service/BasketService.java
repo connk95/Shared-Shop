@@ -3,7 +3,6 @@ package jp.co.sss.shop.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -11,7 +10,6 @@ import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.ItemBean;
-import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.util.Constant;
 
@@ -200,32 +198,5 @@ public class BasketService {
 		}
 		//セッションからバスケットを削除
 		session.removeAttribute("basketBeans");
-	}
-
-	/**
-	 * Dummyメソッド
-	 * 
-	 * 
-	 * 終わったら削除
-	 */
-	public void dummyItems(ItemRepository itemRepository, HttpSession session) {
-		List<BasketBean> basketBeans = new ArrayList<BasketBean>();
-
-		basketBeans.add(new BasketBean());
-		Item item1 = itemRepository.getReferenceById(1);
-		BeanUtils.copyProperties(item1, basketBeans.get(0));
-		basketBeans.get(0).setOrderNum(2);
-
-		basketBeans.add(new BasketBean());
-		Item item2 = itemRepository.getReferenceById(2);
-		BeanUtils.copyProperties(item2, basketBeans.get(1));
-		basketBeans.get(1).setOrderNum(6);
-
-		basketBeans.add(new BasketBean());
-		Item item3 = itemRepository.getReferenceById(3);
-		BeanUtils.copyProperties(item3, basketBeans.get(2));
-		basketBeans.get(2).setOrderNum(4);
-
-		session.setAttribute("basketBeans", basketBeans);
 	}
 }
