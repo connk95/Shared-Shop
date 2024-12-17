@@ -1,5 +1,5 @@
 CREATE TABLE tracking(
-    id VARCHAR(5),
+    id NUMBER(6,0),
     order_id NUMBER(6,0),
     status VARCHAR (5),
     tracking_number VARCHAR(10) UNIQUE,
@@ -10,10 +10,10 @@ CREATE TABLE tracking(
 INSERT INTO TRACKING (ID, ORDER_ID, STATUS, TRACKING_NUMBER)
 SELECT 
     TO_CHAR(ROWNUM, '0') AS SHIPMENT_ID,       
-    ID,                                        
-    '0' AS STATUS,                                 
+    ID AS ORDER_ID,                          
+    '0' AS STATUS,                             
+    NULL AS TRACKING_NUMBER                    
 FROM ORDERS;
-
 
 CREATE SEQUENCE SHIPMENT_SEQ
 START WITH 1          
