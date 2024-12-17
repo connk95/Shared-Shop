@@ -3,7 +3,6 @@ package jp.co.sss.shop.controller.client.basket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -90,17 +89,4 @@ public class ClientBasketController {
 		basketService.deleteAllItem(session);
 		return "redirect:/client/basket/list";
 	}
-
-	/**
-	 * Dummyメソッド
-	 * 終わったら削除
-	 */
-	@GetMapping("/client/basket/dummy")
-	public String dummyitems(Model model) {
-		basketService.dummyItems(itemRepository, session);
-		return "redirect:/client/basket/list";
-	}
-	
-	
-
 }
