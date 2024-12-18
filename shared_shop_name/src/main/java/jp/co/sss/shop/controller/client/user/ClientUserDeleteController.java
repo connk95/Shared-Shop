@@ -12,6 +12,7 @@ import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * 会員管理　会員情報削除機能のコントローラークラス
@@ -73,10 +74,13 @@ public class ClientUserDeleteController {
 	public String deleteComplete(UserForm userForm) {
 
 		userForm = (UserForm) session.getAttribute("userForm");
-		User user = new User();
-		BeanUtils.copyProperties(userForm, user);
+		User user = userRepository.findByIdAndDeleteFlag(userForm.getId(), Constant.NOT_DELETED);
 
-		userRepository.deleteById(user.getId());
+		// 削除フラグを立てる
+		user.setDeleteFlag(Constant.DELETED);
+
+		// 会員情報を保存
+		userRepository.save(user);
 
 		session.removeAttribute("userForm");
 		session.removeAttribute("user");
