@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.ItemBean;
+import jp.co.sss.shop.bean.OrderItemBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.util.Constant;
@@ -202,5 +203,114 @@ public class BasketService {
 
 		//セッションにバスケット情報を保存
 		session.setAttribute("basketBeans", basketBeans);
+	}
+
+	/**
+	 * 在庫状況を確認するメソッド(DB確認)
+	 * 
+	 * ・在庫数が0の場合はメッセージを登録し、買い物かごから削除する
+	 * 
+	 * ・注文数が在庫数より多ければ注文数を在庫数にそろえ、メッセージを登録する
+	 * 
+	 * @param model View リクエストとの受け渡し
+	 * @param session View セッションとの受け渡し
+	 * @param itemRepository 商品情報用レポジトリ
+	 * @param orderItemBeans
+	 * @return 
+	 */
+	public List<OrderItemBean> checkoutCheck(Model model, List<OrderItemBean> orderItemBeans, HttpSession session,
+			ItemRepository itemRepository) {
+
+		//バスケット情報がなければ戻る
+		if (orderItemBeans == null || orderItemBeans.isEmpty()) {
+			return null;
+		}
+
+		List<String> itemNameListLessThan = new ArrayList<>();//在庫数が注文数よりも少ない商品名(テンプレートメッセージ用)
+		List<String> itemNameListZero = new ArrayList<>();//在庫数が0の商品名(テンプレートメッセージ用)
+		List<OrderItemBean> deleteOrderItemBeans = new ArrayList<>();//削除リスト(バスケットから削除する商品)
+
+		//バスケット内の各商品の在庫数確認
+		for (OrderItemBean orderItemBean : orderItemBeans) {
+			Item item = itemRepository.findById(orderItemBean.getId()).orElse(null);
+
+			if (item == null) {
+				continue; // Skip if item is not found in the repository
+			}
+
+			Integer stock = item.getStock();
+			//在庫数0なら商品名リストと削除リストに追加
+			if (stock == 0) {
+				itemNameListZero.add(orderItemBean.getName());
+				deleteOrderItemBeans.add(orderItemBean);
+				continue;
+			}
+			//在庫数が注文数より少ないなら商品名リストに追加し、注文数を在庫数にそろえる
+			if (stock < orderItemBean.getOrderNum()) {
+				itemNameListLessThan.add(orderItemBean.getName());
+				orderItemBean.setOrderNum(stock);
+			}
+		}
+
+		//Veiwに商品名を登録
+		model.addAttribute("itemNameListLessThan", itemNameListLessThan);
+		model.addAttribute("itemNameListZero", itemNameListZero);
+
+		//削除リストに商品が一個以上あればバスケットから該当商品を削除
+		orderItemBeans.removeAll(deleteOrderItemBeans);
+
+		// orderItemBeans更新
+		return orderItemBeans;
+	}
+
+	/**
+	 * 在庫状況を確認するメソッド(DB確認)
+	 * 
+	 * ・在庫数が0の場合はメッセージを登録し、買い物かごから削除する
+	 * 
+	 * ・注文数が在庫数より多ければ注文数を在庫数にそろえ、メッセージを登録する
+	 *
+	 * @param itemRepository 商品情報用レポジトリ
+	 * @param basketBeanList
+	 * @return 
+	 */
+	public List<BasketBean> completeCheck(List<BasketBean> basketBeanList, ItemRepository itemRepository) {
+
+		//バスケット情報がなければ戻る
+		if (basketBeanList == null || basketBeanList.isEmpty()) {
+			return null;
+		}
+
+		List<String> itemNameListLessThan = new ArrayList<>();//在庫数が注文数よりも少ない商品名(テンプレートメッセージ用)
+		List<String> itemNameListZero = new ArrayList<>();//在庫数が0の商品名(テンプレートメッセージ用)
+		List<BasketBean> deleteBasketBeans = new ArrayList<>();//削除リスト(バスケットから削除する商品)
+
+		//バスケット内の各商品の在庫数確認
+		for (BasketBean basketBeans : basketBeanList) {
+			Item item = itemRepository.findById(basketBeans.getId()).orElse(null);
+
+			if (item == null) {
+				continue; 
+			}
+
+			Integer stock = item.getStock();
+			//在庫数0なら商品名リストと削除リストに追加
+			if (stock == 0) {
+				itemNameListZero.add(basketBeans.getName());
+				deleteBasketBeans.add(basketBeans);
+				continue;
+			}
+			//在庫数が注文数より少ないなら商品名リストに追加し、注文数を在庫数にそろえる
+			if (stock < basketBeans.getOrderNum()) {
+				itemNameListLessThan.add(basketBeans.getName());
+				basketBeans.setOrderNum(stock);
+			}
+		}
+
+		//削除リストに商品が一個以上あればバスケットから該当商品を削除
+		basketBeanList.removeAll(deleteBasketBeans);
+
+		// basketBeanList更新
+		return basketBeanList;
 	}
 }

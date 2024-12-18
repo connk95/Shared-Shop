@@ -133,7 +133,7 @@ public class ClientOrderRegistController {
 		if (basketBeans == null) {
 			return new ArrayList<>();
 		}
-		
+
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
 		List<OrderItemBean> orderItemBeans = basketBeanList.stream().map(basketBean -> {
 			Item item = itemRepository.findById(basketBean.getId()).orElse(null);
@@ -215,12 +215,17 @@ public class ClientOrderRegistController {
 	 * @return 注文確認画面
 	 */
 	@GetMapping("/client/order/check")
-	public String getOrderCheck(@Valid @ModelAttribute OrderForm orderForm, OrderBean orderBean, BindingResult result,
+	public String getOrderCheck(@Valid @ModelAttribute OrderForm orderForm,
+			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, OrderBean orderBean,
+			BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
 
 			return "client/order/payment_input";
 		}
+
+		// 在庫確認
+		orderItemBeans = basketService.checkoutCheck(model, orderItemBeans, session, itemRepository);
 
 		model.addAttribute("total", orderBean.getTotal());
 
@@ -296,6 +301,9 @@ public class ClientOrderRegistController {
 		// BasketBeans を取得し、各アイテムを order_items テーブルに保存する
 		Object basketBeans = session.getAttribute("basketBeans");
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
+		
+		// 在庫更新
+		basketBeanList = basketService.completeCheck(basketBeanList, itemRepository);
 		basketBeanList.forEach(basketItem -> {
 
 			OrderItem orderItem = new OrderItem();
