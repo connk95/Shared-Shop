@@ -121,11 +121,11 @@ NOCACHE;
 
 -- レコード登録(配達情報)
 INSERT INTO TRACKING (ID, ORDER_ID, STATUS, TRACKING_NUMBER)
-SELECT 
-    TO_CHAR(ROWNUM, '0') AS SHIPMENT_ID,       
-    ID AS ORDER_ID,                          
-    '0' AS STATUS,                             
-    NULL AS TRACKING_NUMBER                    
+SELECT
+    SEQ_TRACKING.nextval AS ID,
+    ID AS ORDER_ID,
+    '0' AS STATUS,
+    NULL AS TRACKING_NUMBER
 FROM ORDERS;
 
 -- コミット
