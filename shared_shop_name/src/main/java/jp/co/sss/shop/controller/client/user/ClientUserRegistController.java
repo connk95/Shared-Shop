@@ -125,7 +125,7 @@ public class ClientUserRegistController {
 
 		UserForm userForm = (UserForm) session.getAttribute("userForm");
 		model.addAttribute("userForm", userForm);
-		return "/client/user/regist_check";
+		return "client/user/regist_check";
 	}
 
 	/**

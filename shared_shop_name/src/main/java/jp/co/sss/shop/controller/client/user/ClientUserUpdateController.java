@@ -65,7 +65,7 @@ public class ClientUserUpdateController {
 	 * 
 	 * @param model Viewとの値受渡し
 	 * @param userForm 入力フォーム
-	 * @return "/client/user/update_input" 入力画面 表示処理
+	 * @return "client/user/update_input" 入力画面 表示処理
 	 */
 	@GetMapping("/client/user/update/input")
 	public String getUpdateInput(Model model, UserForm userForm) {
@@ -81,7 +81,7 @@ public class ClientUserUpdateController {
 			session.removeAttribute("org.springframework.validation.BindingResult.userForm");
 		}
 
-		return "/client/user/update_input";
+		return "client/user/update_input";
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class ClientUserUpdateController {
 	 * 
 	 * @param userForm 入力フォーム
 	 * @param model Viewとの値受渡
-	 * @return "/client/user/update_check" 変更確認画面　表示処理
+	 * @return "client/user/update_check" 変更確認画面　表示処理
 	 */
 	@GetMapping("/client/user/update/check")
 	public String getUpdateCheck(UserForm userForm, Model model) {
@@ -120,7 +120,7 @@ public class ClientUserUpdateController {
 		userForm = (UserForm) session.getAttribute("userForm");
 		model.addAttribute("userForm", userForm);
 
-		return "/client/user/update_check";
+		return "client/user/update_check";
 	}
 
 	/**
@@ -162,12 +162,12 @@ public class ClientUserUpdateController {
 	/**
 	 * 変更完了画面　表示処理
 	 * 
-	 * @return "/client/user/update_complete" 変更完了画面　表示処理
+	 * @return "client/user/update_complete" 変更完了画面　表示処理
 	 */
 	@GetMapping("/client/user/update/complete")
 	public String getUpdateComplete() {
 		
-		return "/client/user/update_complete";
+		return "client/user/update_complete";
 	}
 
 }
