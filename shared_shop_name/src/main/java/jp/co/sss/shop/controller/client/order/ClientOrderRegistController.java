@@ -129,6 +129,11 @@ public class ClientOrderRegistController {
 	@ModelAttribute("orderItemBeans")
 	public List<OrderItemBean> setupBasketBeans(HttpSession session) {
 		Object basketBeans = session.getAttribute("basketBeans");
+
+		if (basketBeans == null) {
+			return new ArrayList<>();
+		}
+		
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
 		List<OrderItemBean> orderItemBeans = basketBeanList.stream().map(basketBean -> {
 			Item item = itemRepository.findById(basketBean.getId()).orElse(null);
@@ -229,7 +234,7 @@ public class ClientOrderRegistController {
 	 * @return 注文完了画面
 	 */
 	@PostMapping("/client/order/check")
-	public String orderCheck(@Valid @ModelAttribute OrderForm orderForm,
+	public String postOrderCheck(@Valid @ModelAttribute OrderForm orderForm,
 			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, BindingResult result,
 			Model model) {
 		if (result.hasErrors()) {
@@ -250,7 +255,17 @@ public class ClientOrderRegistController {
 		model.addAttribute("total", orderBean.getTotal());
 		model.addAttribute("orderBean", orderBean);
 
-		return "client/order/check";
+		return "redirect:/client/order/check";
+	}
+
+	/**
+	 * 注文完了
+	 *
+	 * @return 注文完了画面
+	 */
+	@GetMapping("/client/order/complete")
+	public String getOrderComplete() {
+		return "client/order/complete";
 	}
 
 	/**
@@ -259,7 +274,7 @@ public class ClientOrderRegistController {
 	 * @param orderForm注文フォーム
 	 * @return 注文完了画面
 	 */
-	@GetMapping(path = "/client/order/complete")
+	@PostMapping(path = "/client/order/complete")
 	public String postOrderComplete(@Valid @ModelAttribute OrderForm orderForm, @ModelAttribute OrderBean orderBean,
 			@ModelAttribute("orderItemBeans") List<OrderItemBean> orderItemBeans, BindingResult result, Model model,
 			SessionStatus status) {
@@ -295,6 +310,10 @@ public class ClientOrderRegistController {
 			orderItem.setPrice(item.getPrice());
 
 			orderItemRepository.save(orderItem);
+
+			item.setStock(item.getStock() - orderItem.getQuantity());
+
+			itemRepository.save(item);
 		});
 
 		// 配達情報を作成
@@ -308,6 +327,6 @@ public class ClientOrderRegistController {
 		// 一時データをクリアする
 		status.setComplete();
 		basketService.deleteAllItem(session);
-		return "client/order/complete";
+		return "redirect:/client/order/complete";
 	}
 }
