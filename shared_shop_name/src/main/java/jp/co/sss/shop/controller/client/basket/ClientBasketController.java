@@ -51,7 +51,7 @@ public class ClientBasketController {
 	 */
 	@RequestMapping(path = "/client/basket/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public String showItemsInBasket(Model model) {
-		basketService.stockCheck(model, session);
+		basketService.stockCheck(model, session, itemRepository);
 		return "client/basket/list";
 	}
 
