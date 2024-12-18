@@ -46,10 +46,21 @@ public class ClientUserRegistController {
 	 * @return "redirect:/client/user/regist/input" 入力画面 表示処理
 	 */
 	@GetMapping("/client/user/regist/input/init")
-	public String registInput(Model model) {
+	public String registInputInit(Model model) {
 
 		UserForm userForm = new UserForm();
 		session.setAttribute("userForm", userForm);
+		return "redirect:/client/user/regist/input";
+	}
+
+	/**
+	 * 入力画面　Post送信で受け取った際の新規会員登録表示処理
+	 * 
+	 * @return "redirect:/client/user/regist/input" 入力画面 表示処理
+	 */
+	@PostMapping("/client/user/regist/input")
+	public String registInput() {
+
 		return "redirect:/client/user/regist/input";
 	}
 
@@ -61,7 +72,7 @@ public class ClientUserRegistController {
 	 * @return "client/user/regist_input" 入力画面 表示処理
 	 */
 	@GetMapping("/client/user/regist/input")
-	public String getRedirectRegistInput(UserForm userForm, Model model) {
+	public String registInput(UserForm userForm, Model model) {
 
 		BindingResult result = (BindingResult) session.getAttribute("result");
 
@@ -88,7 +99,7 @@ public class ClientUserRegistController {
 	 * 入力値エラーなし："redirect:/client/user/regist/check" 登録確認画面 表示処理
 	 */
 	@PostMapping("/client/user/regist/check")
-	public String registCheck(@Valid @ModelAttribute UserForm userForm, BindingResult result) {
+	public String registInputCheck(@Valid @ModelAttribute UserForm userForm, BindingResult result) {
 
 		session.setAttribute("userForm", userForm);
 
@@ -110,7 +121,7 @@ public class ClientUserRegistController {
 	 * @return Viewとの値受渡し
 	 */
 	@GetMapping("/client/user/regist/check")
-	public String getResuitCheck(Model model) {
+	public String registCheck(Model model) {
 
 		UserForm userForm = (UserForm) session.getAttribute("userForm");
 		model.addAttribute("userForm", userForm);
@@ -156,7 +167,7 @@ public class ClientUserRegistController {
 	 * @return "client/user/regist_complete" 登録完了画面　表示
 	 */
 	@GetMapping("/client/user/regist/complete")
-	public String getRegistComplete(UserForm userForm) {
+	public String RegistCompleteFinish(UserForm userForm) {
 
 		return "client/user/regist_complete";
 	}
