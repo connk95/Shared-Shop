@@ -53,14 +53,14 @@ public class ClientUserDeleteController {
 	 * 
 	 * @param userForm 入力情報フォーム
 	 * @param model Viewとの値受渡
-	 * @return "/client/user/delete_check" 削除確認画面　表示処理
+	 * @return "client/user/delete_check" 削除確認画面　表示処理
 	 */
 	@GetMapping("/client/user/delete/check")
 	public String getDeleteCheck(UserForm userForm, Model model) {
 
 		userForm = (UserForm) session.getAttribute("userForm");
 		model.addAttribute("userForm", userForm);
-		return "/client/user/delete_check";
+		return "client/user/delete_check";
 	}
 
 	/**
@@ -87,11 +87,11 @@ public class ClientUserDeleteController {
 	/**
 	 * 削除完了画面　表示処理
 	 * 
-	 * @return "/client/user/delete_complete" 削除完了画面　表示処理
+	 * @return "client/user/delete_complete" 削除完了画面　表示処理
 	 */
 	@GetMapping("/client/user/delete/complete")
 	public String getDeleteComplete() {
 
-		return "/client/user/delete_complete";
+		return "client/user/delete_complete";
 	}
 }
