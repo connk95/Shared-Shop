@@ -109,7 +109,7 @@ CREATE TABLE tracking(
     order_id NUMBER(6,0),
     status VARCHAR (5),
     tracking_number VARCHAR(10) UNIQUE,
-    PRIMARY KEY(shipment_id),
+    PRIMARY KEY(id),
     FOREIGN KEY(order_id) REFERENCES orders(id)
 );
 
