@@ -303,6 +303,8 @@ public class ClientOrderRegistController {
 		Object basketBeans = session.getAttribute("basketBeans");
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
 
+		orderRepository.save(order);
+
 		// 在庫更新
 		basketBeanList = basketService.completeCheck(basketBeanList, itemRepository);
 		basketBeanList.forEach(basketItem -> {
