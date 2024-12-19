@@ -16,7 +16,7 @@ public class TrackingBean {
 	/**
 	 * 配達番号
 	 */
-	private Integer trackingNumber;
+	private String trackingNumber;
 
 	/**
 	 * 配達IDの取得
@@ -70,7 +70,7 @@ public class TrackingBean {
 	 * 配達番号の取得
 	 * @return 配達番号
 	 */
-	public Integer getTrackingNumber() {
+	public String getTrackingNumber() {
 		return trackingNumber;
 	}
 
@@ -78,7 +78,7 @@ public class TrackingBean {
 	 * 配達番号のセット
 	 * @return 配達番号
 	 */
-	public void setTrackingNumber(Integer trackingNumber) {
+	public void setTrackingNumber(String trackingNumber) {
 		this.trackingNumber = trackingNumber;
 	}
 }
