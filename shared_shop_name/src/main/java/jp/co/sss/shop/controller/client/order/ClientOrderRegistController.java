@@ -299,8 +299,6 @@ public class ClientOrderRegistController {
 		Integer userId = userBean.getId();
 		User user = userRepository.findById(userId).orElse(null);
 		order.setUser(user);
-		// 注文をデータベースに保存する
-		orderRepository.save(order);
 		// BasketBeans を取得し、各アイテムを order_items テーブルに保存する
 		Object basketBeans = session.getAttribute("basketBeans");
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
