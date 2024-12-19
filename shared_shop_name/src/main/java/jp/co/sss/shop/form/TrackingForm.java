@@ -3,6 +3,7 @@ package jp.co.sss.shop.form;
 import java.io.Serializable;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -14,8 +15,9 @@ public class TrackingForm implements Serializable {
 	 * 配達番号
 	 */
 	@NotBlank
-	@Size(min = 12, max = 12, message = "配達番号12桁を入力してください。")
-	private Integer trackingNumber;
+	@Size(min = 12, max = 12, message = "{trackingRegist.numberdigits.message}")
+	@Pattern(regexp = "^[0-9]+$", message = "{trackingRegist.numberpattern.message}")
+	private String trackingNumber;
 
 	/**
 	 * 配達状況
@@ -26,7 +28,7 @@ public class TrackingForm implements Serializable {
 	 * 配達番号
 	 * @return 配達番号
 	 */
-	public Integer getTrackingNumber() {
+	public String getTrackingNumber() {
 		return trackingNumber;
 	}
 
@@ -34,7 +36,7 @@ public class TrackingForm implements Serializable {
 	 * 配達番号
 	 * @param 配達番号
 	 */
-	public void setTrackingNumber(Integer trackingNumber) {
+	public void setTrackingNumber(String trackingNumber) {
 		this.trackingNumber = trackingNumber;
 	}
 
