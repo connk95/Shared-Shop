@@ -14,8 +14,8 @@ public class TrackingForm implements Serializable {
 	 * 配達番号
 	 */
 	@NotBlank
-	@Size(min = 10, max = 10, message = "配達番号10桁を入力してください。")
-	private String trackingNumber;
+	@Size(min = 12, max = 12, message = "配達番号12桁を入力してください。")
+	private Integer trackingNumber;
 
 	/**
 	 * 配達状況
@@ -26,7 +26,7 @@ public class TrackingForm implements Serializable {
 	 * 配達番号
 	 * @return 配達番号
 	 */
-	public String getTrackingNumber() {
+	public Integer getTrackingNumber() {
 		return trackingNumber;
 	}
 
@@ -34,7 +34,7 @@ public class TrackingForm implements Serializable {
 	 * 配達番号
 	 * @param 配達番号
 	 */
-	public void setTrackingNumber(String trackingNumber) {
+	public void setTrackingNumber(Integer trackingNumber) {
 		this.trackingNumber = trackingNumber;
 	}
 

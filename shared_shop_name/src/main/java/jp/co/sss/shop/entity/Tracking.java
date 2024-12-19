@@ -26,7 +26,7 @@ public class Tracking {
     private Integer status;
 
     @Column
-    private String trackingNumber;
+    private Integer trackingNumber;
 
 
 	/**
@@ -81,7 +81,7 @@ public class Tracking {
 	 * 配達番号の取得
 	 * @return 配達番号
 	 */
-	public String getTrackingNumber() {
+	public Integer getTrackingNumber() {
 		return trackingNumber;
 	}
 
@@ -89,7 +89,7 @@ public class Tracking {
 	 * 配達番号のセット
 	 * @return 配達番号
 	 */
-	public void setTrackingNumber(String trackingNumber) {
+	public void setTrackingNumber(Integer trackingNumber) {
 		this.trackingNumber = trackingNumber;
 	}
 }
