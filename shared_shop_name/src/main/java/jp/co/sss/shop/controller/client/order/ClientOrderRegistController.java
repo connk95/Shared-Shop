@@ -151,8 +151,14 @@ public class ClientOrderRegistController {
 	 * @return 住所情報を入力画面
 	 */
 	@GetMapping("/client/order/address/input")
-	public String getOrderAddressInput(@ModelAttribute OrderForm orderForm) {
-
+	public String getOrderAddressInput(@ModelAttribute OrderForm orderForm,Model model) {
+		BindingResult result = (BindingResult) session.getAttribute("result");
+		if (result != null) {
+			//セッションにエラー情報がある場合、エラー情報をスコープに設定
+			model.addAttribute("org.springframework.validation.BindingResult.orderForm", result);
+			// セッションにエラー情報を削除
+			session.removeAttribute("result");
+		}
 		return "client/order/address_input";
 	}
 
@@ -184,7 +190,7 @@ public class ClientOrderRegistController {
 	 * @return 支払方法入力画面
 	 */
 	@GetMapping("/client/order/payment/input")
-	public String getOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result,Model model) {
+	public String getOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result, Model model) {
 		model.addAttribute("payMethod", orderForm.getPayMethod());
 		return "client/order/payment_input";
 	}
@@ -198,7 +204,8 @@ public class ClientOrderRegistController {
 	@PostMapping(path = "/client/order/payment/input")
 	public String postOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result, Model model) {
 		if (result.hasErrors()) {
-			return "client/order/payment_input";
+			session.setAttribute("result", result);
+			return "redirect:/client/order/address/input";
 		}
 
 		return "redirect:/client/order/payment/input";
