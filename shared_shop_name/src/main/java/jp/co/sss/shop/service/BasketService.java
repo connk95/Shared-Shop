@@ -271,7 +271,6 @@ public class BasketService {
 		}
 
 		if (basketBeans.size() == 0) {
-			System.out.println("バスケットを空にします");
 			model.addAttribute("orderItemBeans", null);
 			session.removeAttribute("basketBeans");
 			isStockCheckOK = false;
