@@ -22,6 +22,9 @@
 			<ul class="error_list_no_mark" th:if="${itemNameListZero != null}">
 				<li th:each="err : ${itemNameListZero}" th:text="#{msg.order.item.stock.none(${err})}"></li>
 			</ul>
+			<ul>
+				<li th:each="err : ${zeroStock}" th:text="#{msg.order.item.stock.none(${err})}"></li>
+			</ul>
 			<br />
 		</div>
 	</th:block>

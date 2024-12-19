@@ -296,14 +296,27 @@ public class ClientOrderRegistController {
 		Integer userId = userBean.getId();
 		User user = userRepository.findById(userId).orElse(null);
 		order.setUser(user);
-		// 注文をデータベースに保存する
-		orderRepository.save(order);
 		// BasketBeans を取得し、各アイテムを order_items テーブルに保存する
 		Object basketBeans = session.getAttribute("basketBeans");
 		List<BasketBean> basketBeanList = (List<BasketBean>) basketBeans;
-		
-		// 在庫更新
-		basketBeanList = basketService.completeCheck(basketBeanList, itemRepository);
+
+		// basketBeanListをコピー
+		List<BasketBean> checkBasketList = basketBeanList.stream()
+				.map(b -> new BasketBean(b.getId(), b.getName(), b.getStock(), b.getOrderNum()))
+				.collect(Collectors.toList());
+
+		// basketBeanListの内容を確認
+		basketService.completeCheck(basketBeanList, itemRepository);
+
+		// basketBeanListとcheckBasketListを比較
+		if (!basketService.areStocksIdentical(basketBeanList, checkBasketList)) {
+			basketService.checkoutCheck(model, orderItemBeans, session, itemRepository);
+			return "client/order/check";
+		}
+
+		// 注文をデータベースに保存する
+		orderRepository.save(order);
+
 		basketBeanList.forEach(basketItem -> {
 
 			OrderItem orderItem = new OrderItem();

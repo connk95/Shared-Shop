@@ -2,6 +2,7 @@ package jp.co.sss.shop.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -290,7 +291,7 @@ public class BasketService {
 			Item item = itemRepository.findById(basketBeans.getId()).orElse(null);
 
 			if (item == null) {
-				continue; 
+				continue;
 			}
 
 			Integer stock = item.getStock();
@@ -312,5 +313,24 @@ public class BasketService {
 
 		// basketBeanList更新
 		return basketBeanList;
+	}
+
+	public boolean areStocksIdentical(List<BasketBean> list1, List<BasketBean> list2) {
+		// Check if the sizes of the lists are the same
+		if (list1.size() != list2.size()) {
+			return false;
+		}
+
+		// Compare stock values for each corresponding element
+		for (int i = 0; i < list1.size(); i++) {
+			BasketBean bean1 = list1.get(i);
+			BasketBean bean2 = list2.get(i);
+
+			if (!Objects.equals(bean1.getStock(), bean2.getStock())) {
+				return false; // Mismatch found
+			}
+		}
+
+		return true; // All stock values are identical
 	}
 }
