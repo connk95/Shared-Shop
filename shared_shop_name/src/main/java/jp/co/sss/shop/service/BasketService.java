@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
@@ -215,11 +216,87 @@ public class BasketService {
 	 * @param model View リクエストとの受け渡し
 	 * @param session View セッションとの受け渡し
 	 * @param itemRepository 商品情報用レポジトリ
+	 */
+	public boolean stockCheckOut(Model model, HttpSession session, ItemRepository itemRepository,
+			RedirectAttributes redirectAttributes) {
+
+		boolean isStockCheckOK = true;
+
+		// セッションからバスケット情報の取得
+		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
+
+		//バスケット情報がなければ戻る
+		if (basketBeans == null) {
+			session.removeAttribute("orderItemBeans");
+			session.removeAttribute("basketBeans");
+			return isStockCheckOK = false;
+		}
+
+		List<String> itemNameListLessThan = new ArrayList<String>();//在庫数が注文数よりも少ない商品名(テンプレートメッセージ用)
+		List<String> itemNameListZero = new ArrayList<String>();//在庫数が0の商品名(テンプレートメッセージ用)
+		List<BasketBean> deleteBasketBeans = new ArrayList<BasketBean>();//削除リスト(バスケットから削除する商品)
+
+		//バスケット内の各商品の在庫数確認
+		for (BasketBean basketBean : basketBeans) {
+			Item item = itemRepository.getReferenceById(basketBean.getId());
+
+			Integer stock = item.getStock();
+			//在庫数0なら商品名リストと削除リストに追加
+			if (stock == 0) {
+				itemNameListZero.add(basketBean.getName());
+				deleteBasketBeans.add(basketBean);
+				isStockCheckOK = false;
+				continue;
+			}
+			//在庫数が注文数より少ないなら商品名リストに追加し、注文数を在庫数にそろえる
+			if (stock < basketBean.getOrderNum()) {
+				itemNameListLessThan.add(basketBean.getName());
+				isStockCheckOK = false;
+				basketBean.setOrderNum(stock);
+			}
+		}
+
+		//Veiwに商品名を登録
+		redirectAttributes.addFlashAttribute("itemNameListLessThan", itemNameListLessThan);
+		redirectAttributes.addFlashAttribute("itemNameListZero", itemNameListZero);
+		model.addAttribute("itemNameListLessThan", itemNameListLessThan);
+		model.addAttribute("itemNameListZero", itemNameListZero);
+
+		//削除リストに商品が一個以上あればバスケットから該当商品を削除
+		if (deleteBasketBeans.size() != 0) {
+			for (BasketBean deleteBean : deleteBasketBeans) {
+				basketBeans.remove(deleteBean);
+			}
+		}
+
+		if (basketBeans.size() == 0) {
+			System.out.println("バスケットを空にします");
+			model.addAttribute("orderItemBeans", null);
+			session.removeAttribute("basketBeans");
+			isStockCheckOK = false;
+		}
+
+		//セッションにバスケット情報を保存
+		session.setAttribute("basketBeans", basketBeans);
+
+		return isStockCheckOK;
+	}
+
+	/**
+	 * 在庫状況を確認するメソッド(DB確認)
+	 * 
+	 * ・在庫数が0の場合はメッセージを登録し、買い物かごから削除する
+	 * 
+	 * ・注文数が在庫数より多ければ注文数を在庫数にそろえ、メッセージを登録する
+	 * 
+	 * @param model View リクエストとの受け渡し
+	 * @param session View セッションとの受け渡し
+	 * @param itemRepository 商品情報用レポジトリ
 	 * @param orderItemBeans
 	 * @return 
 	 */
 	public List<OrderItemBean> checkoutCheck(Model model, List<OrderItemBean> orderItemBeans, HttpSession session,
-			ItemRepository itemRepository) {
+			ItemRepository itemRepository, RedirectAttributes redirectAttributes) {
 
 		//バスケット情報がなければ戻る
 		if (orderItemBeans == null || orderItemBeans.isEmpty()) {
@@ -253,11 +330,20 @@ public class BasketService {
 		}
 
 		//Veiwに商品名を登録
+		redirectAttributes.addFlashAttribute("itemNameListLessThan", itemNameListLessThan);
+		redirectAttributes.addFlashAttribute("itemNameListZero", itemNameListZero);
+
 		model.addAttribute("itemNameListLessThan", itemNameListLessThan);
 		model.addAttribute("itemNameListZero", itemNameListZero);
 
 		//削除リストに商品が一個以上あればバスケットから該当商品を削除
 		orderItemBeans.removeAll(deleteOrderItemBeans);
+
+		if (orderItemBeans.size() == 0) {
+			session.removeAttribute("orderItemBeans");
+			session.removeAttribute("basketBeans");
+			return null;
+		}
 
 		// orderItemBeans更新
 		return orderItemBeans;
@@ -290,7 +376,7 @@ public class BasketService {
 			Item item = itemRepository.findById(basketBeans.getId()).orElse(null);
 
 			if (item == null) {
-				continue; 
+				continue;
 			}
 
 			Integer stock = item.getStock();
