@@ -184,7 +184,8 @@ public class ClientOrderRegistController {
 	 * @return 支払方法入力画面
 	 */
 	@GetMapping("/client/order/payment/input")
-	public String getOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result) {
+	public String getOrderPaymentInput(@Valid @ModelAttribute OrderForm orderForm, BindingResult result,Model model) {
+		model.addAttribute("payMethod", orderForm.getPayMethod());
 		return "client/order/payment_input";
 	}
 
