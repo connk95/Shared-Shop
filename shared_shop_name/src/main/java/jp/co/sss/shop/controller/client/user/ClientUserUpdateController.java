@@ -21,7 +21,7 @@ import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.util.Constant;
 /**
  * 会員管理　会員情報更新機能のコントローラークラス
- * @author Yamazaki
+ * @author Yamazaki_Taisei
  */
 @Controller
 public class ClientUserUpdateController {

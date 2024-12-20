@@ -22,7 +22,7 @@ import jp.co.sss.shop.util.Constant;
 
 /**
  * 会員管理 登録機能(非会員)のコントローラクラス
- * @author Yamazaki
+ * @author Yamazaki_Taisei
  */
 @Controller
 public class ClientUserRegistController {

@@ -16,7 +16,7 @@ import jp.co.sss.shop.util.Constant;
 
 /**
  * 会員管理　会員情報削除機能のコントローラークラス
- * @author Yamazaki
+ * @author Yamazaki_Taisei
  */
 @Controller
 public class ClientUserDeleteController {
