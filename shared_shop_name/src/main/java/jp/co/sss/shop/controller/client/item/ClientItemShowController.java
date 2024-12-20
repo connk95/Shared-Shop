@@ -94,7 +94,7 @@ public class ClientItemShowController {
 	/**
 	 * 商品一覧表示（新着順、売れ筋順、カテゴリ検索対応）
 	 *
-	 * @param sortType   表示順 (1: 新着順, 2: 売れ筋順)
+	 * @param sortType  表示順 (1: 新着順, 2: 売れ筋順)
 	 * @param categoryId カテゴリーID (null または 0 の場合は全カテゴリ)
 	 * @param price 検索価格帯
 	 * @param model Viewとの値受渡し
@@ -118,8 +118,10 @@ public class ClientItemShowController {
 
 	/**
 	 * 商品名リンククリック→詳細表示
+	 * @param id 商品ID
+	 * @param model Viewとの値受渡し
+	 * @return 商品詳細画面
 	 */
-
 	@GetMapping("/client/item/detail/{id}")
 	public String detail(@PathVariable Integer id, Model model) {
 		Item item = itemRepository.getReferenceById(id);
