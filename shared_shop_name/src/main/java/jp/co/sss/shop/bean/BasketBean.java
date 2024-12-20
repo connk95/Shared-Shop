@@ -3,7 +3,7 @@ package jp.co.sss.shop.bean;
 /**
  * 買い物かご内の商品情報クラス
  *
- * @author SystemShared
+ * @author Uzawa_Raiki
  */
 
 public class BasketBean {

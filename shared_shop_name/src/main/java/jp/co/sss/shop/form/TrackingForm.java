@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Size;
 
 /**
  * 配達状況入力フォーム
+ * 
+ * @author Connor_Ketcheson
  */
 public class TrackingForm implements Serializable {
 
@@ -20,7 +22,7 @@ public class TrackingForm implements Serializable {
 	private String trackingNumber;
 
 	/**
-	 * 配達状況
+	 * 配達状況 0:注文済み 1:発送済み 2:配達中 3:配達済み
 	 */
 	private Integer status;
 

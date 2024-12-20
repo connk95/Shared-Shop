@@ -150,10 +150,6 @@ public class BeanTools {
 			if (entity.getCategory() != null) {
 				bean.setCategoryName(entity.getCategory().getName());
 			}
-			for (OrderItem orderItem : entity.getOrderItemsList()) {
-				totalQuantity += orderItem.getQuantity();
-			}
-			bean.setTotalQuantity(totalQuantity);
 
 			beanList.add(bean);
 		}

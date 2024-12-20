@@ -7,6 +7,8 @@ import jp.co.sss.shop.entity.Tracking;
 
 /**
  * trackingテーブル用リポジトリ
+ * 
+ * @author Connor_Ketcheson
  */
 @Repository
 public interface TrackingRepository extends JpaRepository<Tracking, Integer> {
