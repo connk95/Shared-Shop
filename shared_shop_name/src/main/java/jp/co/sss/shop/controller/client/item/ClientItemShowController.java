@@ -118,8 +118,10 @@ public class ClientItemShowController {
 
 	/**
 	 * 商品名リンククリック→詳細表示
+	 * @param id 商品ID
+	 * @param model Viewとの値受渡し
+	 * @return 商品詳細画面
 	 */
-
 	@GetMapping("/client/item/detail/{id}")
 	public String detail(@PathVariable Integer id, Model model) {
 		Item item = itemRepository.getReferenceById(id);
