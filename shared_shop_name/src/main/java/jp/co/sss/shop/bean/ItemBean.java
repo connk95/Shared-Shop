@@ -46,12 +46,6 @@ public class ItemBean {
 	 * カテゴリ名
 	 */
 	private String categoryName;
-	
-	/**
-	 * 総販売数
-	 */
-	private Integer totalQuantity;
-	
 
 	/**
 	 * 商品ID取得
@@ -179,24 +173,6 @@ public class ItemBean {
 	 */
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
-	}
-
-	/**
-	 * 総販売数の取得
-	 * 
-	 * @return 総販売数
-	 */
-	public Integer getTotalQuantity() {
-		return totalQuantity;
-	}
-
-	/**
-	 * 総販売数のセット
-	 * 
-	 * @param totalQuantity 総販売数
-	 */
-	public void setTotalQuantity(Integer totalQuantity) {
-		this.totalQuantity = totalQuantity;
 	}
 
 }

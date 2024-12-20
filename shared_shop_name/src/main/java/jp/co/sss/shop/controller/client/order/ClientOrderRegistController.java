@@ -224,6 +224,10 @@ public class ClientOrderRegistController {
 
 			return "client/order/payment_input";
 		}
+		
+		if (orderItemBeans == null) {
+			return "client/order/check";
+		}
 
 		// 一時的に注文を orderBean に保存する
 		orderBean = new OrderBean();
@@ -313,8 +317,6 @@ public class ClientOrderRegistController {
 
 		orderRepository.save(order);
 
-		// 在庫更新
-		basketBeanList = basketService.completeCheck(basketBeanList, itemRepository);
 		basketBeanList.forEach(basketItem -> {
 
 			OrderItem orderItem = new OrderItem();

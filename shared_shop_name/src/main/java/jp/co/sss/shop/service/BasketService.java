@@ -2,7 +2,6 @@ package jp.co.sss.shop.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.ItemBean;
-import jp.co.sss.shop.bean.OrderItemBean;
 import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.util.Constant;
@@ -208,7 +206,7 @@ public class BasketService {
 	}
 
 	/**
-	 * 在庫状況を確認するメソッド(DB確認)
+	 * 購入手続き時に在庫状況を確認するメソッド(DB確認)
 	 * 
 	 * ・在庫数が0の場合はメッセージを登録し、買い物かごから削除する
 	 * 
@@ -217,11 +215,13 @@ public class BasketService {
 	 * @param model View リクエストとの受け渡し
 	 * @param session View セッションとの受け渡し
 	 * @param itemRepository 商品情報用レポジトリ
+	 * @param redirectAttributes フラッシュとの受け渡し
+	 * @return boolean isStockCheckOK 在庫状況の異常検知真偽値
 	 */
 	public boolean stockCheckOut(Model model, HttpSession session, ItemRepository itemRepository,
 			RedirectAttributes redirectAttributes) {
 
-		boolean isStockCheckOK = true;
+		boolean isStockCheckOK = true;//在庫状況の異常検知真偽値 true:問題なし false:在庫不足
 
 		// セッションからバスケット情報の取得
 		List<BasketBean> basketBeans = (List<BasketBean>) session.getAttribute("basketBeans");
@@ -270,6 +270,7 @@ public class BasketService {
 			}
 		}
 
+		//買い物かごの中身が何もない場合、買い物かごと注文商品情報を削除する
 		if (basketBeans.size() == 0) {
 			model.addAttribute("orderItemBeans", null);
 			session.removeAttribute("basketBeans");
@@ -282,140 +283,4 @@ public class BasketService {
 		return isStockCheckOK;
 	}
 
-	/**
-	 * 在庫状況を確認するメソッド(DB確認)
-	 * 
-	 * ・在庫数が0の場合はメッセージを登録し、買い物かごから削除する
-	 * 
-	 * ・注文数が在庫数より多ければ注文数を在庫数にそろえ、メッセージを登録する
-	 * 
-	 * @param model View リクエストとの受け渡し
-	 * @param session View セッションとの受け渡し
-	 * @param itemRepository 商品情報用レポジトリ
-	 * @param orderItemBeans
-	 * @return 
-	 */
-	public List<OrderItemBean> checkoutCheck(Model model, List<OrderItemBean> orderItemBeans, HttpSession session,
-			ItemRepository itemRepository, RedirectAttributes redirectAttributes) {
-
-		//バスケット情報がなければ戻る
-		if (orderItemBeans == null || orderItemBeans.isEmpty()) {
-			return null;
-		}
-
-		List<String> itemNameListLessThan = new ArrayList<>();//在庫数が注文数よりも少ない商品名(テンプレートメッセージ用)
-		List<String> itemNameListZero = new ArrayList<>();//在庫数が0の商品名(テンプレートメッセージ用)
-		List<OrderItemBean> deleteOrderItemBeans = new ArrayList<>();//削除リスト(バスケットから削除する商品)
-
-		//バスケット内の各商品の在庫数確認
-		for (OrderItemBean orderItemBean : orderItemBeans) {
-			Item item = itemRepository.findById(orderItemBean.getId()).orElse(null);
-
-			if (item == null) {
-				continue; // Skip if item is not found in the repository
-			}
-
-			Integer stock = item.getStock();
-			//在庫数0なら商品名リストと削除リストに追加
-			if (stock == 0) {
-				itemNameListZero.add(orderItemBean.getName());
-				deleteOrderItemBeans.add(orderItemBean);
-				continue;
-			}
-			//在庫数が注文数より少ないなら商品名リストに追加し、注文数を在庫数にそろえる
-			if (stock < orderItemBean.getOrderNum()) {
-				itemNameListLessThan.add(orderItemBean.getName());
-				orderItemBean.setOrderNum(stock);
-			}
-		}
-
-		//Veiwに商品名を登録
-		redirectAttributes.addFlashAttribute("itemNameListLessThan", itemNameListLessThan);
-		redirectAttributes.addFlashAttribute("itemNameListZero", itemNameListZero);
-
-		model.addAttribute("itemNameListLessThan", itemNameListLessThan);
-		model.addAttribute("itemNameListZero", itemNameListZero);
-
-		//削除リストに商品が一個以上あればバスケットから該当商品を削除
-		orderItemBeans.removeAll(deleteOrderItemBeans);
-
-		if (orderItemBeans.size() == 0) {
-			session.removeAttribute("orderItemBeans");
-			session.removeAttribute("basketBeans");
-			return null;
-		}
-
-		// orderItemBeans更新
-		return orderItemBeans;
-	}
-
-	/**
-	 * 在庫状況を確認するメソッド(DB確認)
-	 * 
-	 * ・在庫数が0の場合はメッセージを登録し、買い物かごから削除する
-	 * 
-	 * ・注文数が在庫数より多ければ注文数を在庫数にそろえ、メッセージを登録する
-	 *
-	 * @param itemRepository 商品情報用レポジトリ
-	 * @param basketBeanList
-	 * @return 
-	 */
-	public List<BasketBean> completeCheck(List<BasketBean> basketBeanList, ItemRepository itemRepository) {
-
-		//バスケット情報がなければ戻る
-		if (basketBeanList == null || basketBeanList.isEmpty()) {
-			return null;
-		}
-
-		List<String> itemNameListLessThan = new ArrayList<>();//在庫数が注文数よりも少ない商品名(テンプレートメッセージ用)
-		List<String> itemNameListZero = new ArrayList<>();//在庫数が0の商品名(テンプレートメッセージ用)
-		List<BasketBean> deleteBasketBeans = new ArrayList<>();//削除リスト(バスケットから削除する商品)
-
-		//バスケット内の各商品の在庫数確認
-		for (BasketBean basketBeans : basketBeanList) {
-			Item item = itemRepository.findById(basketBeans.getId()).orElse(null);
-
-			if (item == null) {
-				continue;
-			}
-
-			Integer stock = item.getStock();
-			//在庫数0なら商品名リストと削除リストに追加
-			if (stock == 0) {
-				itemNameListZero.add(basketBeans.getName());
-				deleteBasketBeans.add(basketBeans);
-				continue;
-			}
-			//在庫数が注文数より少ないなら商品名リストに追加し、注文数を在庫数にそろえる
-			if (stock < basketBeans.getOrderNum()) {
-				itemNameListLessThan.add(basketBeans.getName());
-				basketBeans.setOrderNum(stock);
-			}
-		}
-
-		//削除リストに商品が一個以上あればバスケットから該当商品を削除
-		basketBeanList.removeAll(deleteBasketBeans);
-
-		// basketBeanList更新
-		return basketBeanList;
-	}
-
-	public boolean areStocksIdentical(List<BasketBean> list1, List<BasketBean> list2) {
-		// Check if the sizes of the lists are the same
-		if (list1.size() != list2.size()) {
-			return false;
-		}
-
-		// Compare stock values for each corresponding element
-		for (int i = 0; i < list1.size(); i++) {
-			BasketBean bean1 = list1.get(i);
-			BasketBean bean2 = list2.get(i);
-
-			if (!Objects.equals(bean1.getStock(), bean2.getStock())) {
-				return false; // Mismatch found
-			}
-		}
-
-		return true; // All stock values are identical
-	}
 }
