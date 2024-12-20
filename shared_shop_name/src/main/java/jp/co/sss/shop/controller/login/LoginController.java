@@ -16,8 +16,7 @@ import jp.co.sss.shop.util.Constant;
 
 /**
  * ログイン機能のコントローラクラス
- *
- * @author SystemShared
+ * @author SystemShared, Kaneyuki Joe
  */
 @Controller
 public class LoginController {
