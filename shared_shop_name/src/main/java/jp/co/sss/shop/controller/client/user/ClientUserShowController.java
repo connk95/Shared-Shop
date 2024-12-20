@@ -13,19 +13,29 @@ import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
 
+/**
+ * 会員管理　会員詳細表示機能のコントローラクラス
+ * @author Yamazaki_Taisei
+ */
 @Controller
 public class ClientUserShowController {
 
+	/**
+	 * 会員情報　リポジトリ
+	 */
 	@Autowired
 	UserRepository userRepository;
 
+	/**
+	 * セッション
+	 */
 	@Autowired
 	HttpSession session;
 
 	/**
 	 * 会員詳細表示画面に遷移させる機能
 	 * 
-	 * @return
+	 * @return "client/user/detail" 会員詳細画面　表示処理
 	 */
 	@RequestMapping(path = "/client/user/detail", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientUserShow(Model model, UserForm form) {
@@ -33,7 +43,7 @@ public class ClientUserShowController {
 		User user = new User();
 		UserBean userBean = new UserBean();
 
-		//
+		//セッションからログインしているユーザの情報を取得
 		user = userRepository.getReferenceById(((UserBean) session.getAttribute("user")).getId());
 		BeanUtils.copyProperties(user, userBean);
 		model.addAttribute("userBean", userBean);
