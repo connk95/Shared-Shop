@@ -108,7 +108,7 @@ CREATE TABLE tracking(
     id NUMBER(6,0),
     order_id NUMBER(6,0),
     status VARCHAR (5),
-    tracking_number VARCHAR(10) UNIQUE,
+    tracking_number VARCHAR(12) UNIQUE,
     PRIMARY KEY(id),
     FOREIGN KEY(order_id) REFERENCES orders(id)
 );
