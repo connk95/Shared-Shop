@@ -103,8 +103,8 @@ public class ClientItemShowController {
 	@RequestMapping(path = "client/item/list/{sortType}", method = { RequestMethod.GET, RequestMethod.POST })
 	public String clientItemList(@PathVariable("sortType") int sortType,
 			@RequestParam(value = "categoryId", required = false, defaultValue = "0") Integer categoryId,
-			@RequestParam(value = "loPrice", required = false, defaultValue = "0") Integer loPrice,
-			@RequestParam(value = "hiPrice", required = false, defaultValue = "0") Integer hiPrice,
+			@RequestParam(value = "loPrice", required = false, defaultValue = "0") String loPrice,
+			@RequestParam(value = "hiPrice", required = false, defaultValue = "0") String hiPrice,
 			Model model) { //categoryId・price が0の場合は全商品が表示されるように設定
 
 		// モデルにデータを設定

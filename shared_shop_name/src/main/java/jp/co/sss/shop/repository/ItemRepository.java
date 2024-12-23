@@ -45,7 +45,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
 
-	/** 1
+	/**
 	 * 売れ筋順検索 全商品 (非会員・一般会員機能で利用)
 	 * @param deleteFlag 削除フラグ
 	 * @return 商品エンティティ
@@ -53,7 +53,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	@Query("SELECT i FROM Item i INNER JOIN i.category c LEFT JOIN i.orderItemList oi WHERE i.deleteFlag =:deleteFlag GROUP BY i ORDER BY SUM(oi.quantity) DESC NULLS LAST,i.id DESC")
 	List<Item> findByDeleteFlagOrderByTotalQueantityDescAndIdDesc(@Param(value = "deleteFlag") int deleteFlag);
 
-	/** 2
+	/**
 	 * 新着順検索 全商品 (非会員・一般会員機能で利用)
 	 * @param deleteFlag 削除フラグ
 	 * @return 商品エンティティ
@@ -61,7 +61,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	@Query("SELECT i FROM Item i WHERE i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC,i.id DESC")
 	List<Item> findByDeleteFlagOrderByInsertDateDescAndIdDesc(@Param("deleteFlag") int deleteFlag);
 
-	/** 3
+	/**
 	 * カテゴリ別検索 売れ筋順 (非会員・一般会員機能で利用)
 	 * @param categoryId カテゴリーID
 	 * @param deleteFlag 削除フラグ
@@ -71,7 +71,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	List<Item> findByCategoryIdAndDeleteFlagOrderByTotalQueantityDescAndIdDesc(
 			@Param(value = "categoryId") Integer categoryId, @Param(value = "deleteFlag") int deleteFlag);
 
-	/** 4
+	/**
 	 * カテゴリ別検索 新着順 (非会員・一般会員機能で利用)
 	 * @param categoryId カテゴリーID
 	 * @return 商品エンティティ
@@ -80,7 +80,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	List<Item> findByCategoryIdAndDeleteFlagOrderByInsertDateDescAndIdDesc(
 			@Param(value = "categoryId") Integer categoryId, @Param(value = "deleteFlag") int deleteFlag);
 
-	/** 5
+	/**
 	 * 価格別検索 売れ筋順 (非会員・一般会員機能で利用)
 	 * @param min 下限価格
 	 * @param max 上限価格
@@ -92,7 +92,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 			@Param(value = "min") Integer min, @Param(value = "max") Integer max,
 			@Param(value = "deleteFlag") int deleteFlag);
 
-	/** 6
+	/**
 	 * 価格別検索 新着順 (非会員・一般会員機能で利用)
 	 * @param min 下限価格
 	 * @param max 上限価格
@@ -104,7 +104,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 			@Param(value = "min") Integer min, @Param(value = "max") Integer max,
 			@Param(value = "deleteFlag") int deleteFlag);
 
-	/** 7
+	/**
 	 * カテゴリ別＆価格別検索 売れ筋順 (非会員・一般会員機能で利用)
 	 * @param min 下限価格
 	 * @param max 上限価格
@@ -117,7 +117,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 			@Param(value = "min") Integer min, @Param(value = "max") Integer max,
 			@Param(value = "deleteFlag") int deleteFlag);
 
-	/** 8
+	/**
 	 * カテゴリ別＆価格別検索 新着順 (非会員・一般会員機能で利用)
 	 * @param categoryId カテゴリーID
 	 * @param min 下限価格
