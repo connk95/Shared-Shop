@@ -11,6 +11,9 @@ let priceGap = 1000;
 window.onload = function() {
 	let minPrice = parseInt(priceInput[0].value),
 		maxPrice = parseInt(priceInput[1].value);
+	if(maxPrice > 10000){
+		 maxPrice = 10000;
+	}
 	rangeInput[0].value = minPrice;
 	range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
 	rangeInput[1].value = maxPrice;

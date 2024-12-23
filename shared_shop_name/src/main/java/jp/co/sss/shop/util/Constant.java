@@ -69,6 +69,12 @@ public class Constant {
 	/** 価格別検索 未選択初期値 */
 	public static final Integer DEFAULT_PRICE_SEARCH_NUM = 0;
 	
+	/** 価格別検索 下限初期値 */
+	public static final Integer DEFAULT_PRICE_SEARCH_MIN = 0;
+	
+	/** 価格別検索 上限初期値 */
+	public static final Integer DEFAULT_PRICE_SEARCH_MAX = 10000;
+	
 	/** SwitchFlag 検索処理 選択なし */
 	public static final int NOT_SELECTED = 0;
 	
@@ -81,4 +87,9 @@ public class Constant {
 	/** SwitchFlag 検索処理 選択なし */
 	public static final int SELECT_CATEGORY_ID_AND_PRICE = 3;
 	
+	/** 価格別検索 上限が下限より低い */
+	public static final String PRICE_SEARCH_MAX_LESS_THAN_MIN = "MaxLessThanMin";
+	
+	/** 価格別検索 検索値がマイナス値 */
+	public static final String PRICE_SEARCH_KEY_IS_MINUS = "KeyIsMinus";
 }

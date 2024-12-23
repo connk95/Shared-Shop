@@ -20,6 +20,8 @@
 			th:text="#{sort.hotsell.str}"></a>
 
 		<p th:text="#{msg.client.item.list.none}" th:if="${#lists.isEmpty(items)}"></p>
+		<p th:text="#{msg.price.search.MaxLessThanMin}" th:if="${MaxLessThanMin != null}"></p>
+		<p th:text="#{msg.price.search.KeyIsMinus}" th:if="${KeyIsMinus != null}"></p>
 
 	</div>
 

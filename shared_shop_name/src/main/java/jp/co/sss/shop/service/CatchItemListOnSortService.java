@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import jp.co.sss.shop.bean.ItemBean;
 import jp.co.sss.shop.repository.ItemRepository;
@@ -38,9 +39,14 @@ public class CatchItemListOnSortService {
 	 * @param hiPriceStr 検索価格帯上限
 	 * @return 商品リスト
 	 */
-	public List<ItemBean> creatItemList(int sortType, Integer categoryId, String loPriceStr, String hiPriceStr) {
+	public List<ItemBean> creatItemList(int sortType, Integer categoryId, String loPriceStr, String hiPriceStr,
+			Model model) {
+
+		// Viewに値を受け渡し
+		model.addAttribute("loPrice", loPriceStr);
+		model.addAttribute("hiPrice", hiPriceStr);
 		
-		//入力値がIntの上限を超えていた場合はnullを返す
+		// 入力値がIntの上限を超えていた場合はnullを返す
 		Integer loPrice;
 		Integer hiPrice;
 		try {
@@ -49,19 +55,7 @@ public class CatchItemListOnSortService {
 		} catch (NumberFormatException e) {
 			return null;
 		}
-		
-		// 上限価格、下限価格、カテゴリIDがNullだった場合は初期値で初期化を行う
-		if (loPrice == null) {
-			loPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
-		}
-		if (hiPrice == null) {
-			hiPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
-			loPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
-		}
-		if (categoryId == null) {
-			categoryId =Constant.DEFAULT_SEARCH_CATEGORY_ID;
-		}
-		
+
 		int switchFlag = Constant.NOT_SELECTED;//カテゴリ検索も価格別検索も選択されていない
 		if (categoryId == Constant.DEFAULT_SEARCH_CATEGORY_ID) {
 			if (hiPrice != Constant.DEFAULT_PRICE_SEARCH_NUM) {
@@ -74,6 +68,23 @@ public class CatchItemListOnSortService {
 				switchFlag = Constant.SELECT_CATEGORY_ID_AND_PRICE;//カテゴリ検索と価格検索のみ
 			}
 		}
+
+		// 上限価格が下限価格よりも低い場合はメッセージを表示し、全件表示
+		if (hiPrice < loPrice) {
+			model.addAttribute("MaxLessThanMin", Constant.PRICE_SEARCH_MAX_LESS_THAN_MIN);
+			model.addAttribute("loPrice", Constant.DEFAULT_PRICE_SEARCH_MIN);
+			model.addAttribute("hiPrice", Constant.DEFAULT_PRICE_SEARCH_MAX);
+			switchFlag = Constant.NOT_SELECTED;
+		}
+
+		// 検索価格がマイナス値の場合はメッセージを表示し、全件表示
+		if (hiPrice < 0 || loPrice < 0) {
+			model.addAttribute("KeyIsMinus", Constant.PRICE_SEARCH_KEY_IS_MINUS);
+			model.addAttribute("loPrice", Constant.DEFAULT_PRICE_SEARCH_MIN);
+			model.addAttribute("hiPrice", Constant.DEFAULT_PRICE_SEARCH_MAX);
+			switchFlag = Constant.NOT_SELECTED;
+		}
+
 		//分岐処理
 		switch (switchFlag) {
 		case Constant.SELECT_PRICE://価格別検索が選択されている
