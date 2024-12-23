@@ -108,11 +108,10 @@ public class ClientItemShowController {
 			Model model) { //categoryId・price が0の場合は全商品が表示されるように設定
 
 		// モデルにデータを設定
-		model.addAttribute("items", catchItemListOnSortService.creatItemList(sortType, categoryId, loPrice, hiPrice));
+		model.addAttribute("items",
+				catchItemListOnSortService.creatItemList(sortType, categoryId, loPrice, hiPrice, model));
 		model.addAttribute("sortType", sortType);
 		model.addAttribute("categoryId", categoryId);
-		model.addAttribute("loPrice", loPrice);
-		model.addAttribute("hiPrice", hiPrice);
 		return "client/item/list"; // 商品一覧画面
 	}
 
