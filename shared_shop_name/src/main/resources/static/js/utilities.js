@@ -3,9 +3,19 @@
 const rangeInput = document.querySelectorAll(".range-input input"),
 	priceInput = document.querySelectorAll(".price-input input"),
 	range = document.querySelector(".slider .progress");
-	
+
 // 検索値段の格差
 let priceGap = 1000;
+
+// 画面表示時のスタイル調整
+window.onload = function() {
+	let minPrice = parseInt(priceInput[0].value),
+		maxPrice = parseInt(priceInput[1].value);
+	rangeInput[0].value = minPrice;
+	range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
+	rangeInput[1].value = maxPrice;
+	range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+}
 
 // 検索値段を設定
 priceInput.forEach((input) => {
@@ -63,8 +73,8 @@ if (trackingArea) {
 		dots[1].style.background = "#0C84D9";
 		dots[1].style.color = "white";
 		progressBars[0].style.background = "#0C84D9";
-		
-	// 発送済み場合は、2, 3つ目のノードを表示
+
+		// 発送済み場合は、2, 3つ目のノードを表示
 	} else if (firstChildClass == "delivery") {
 		dots[1].style.background = "#0C84D9";
 		dots[1].style.color = "white";
@@ -72,8 +82,8 @@ if (trackingArea) {
 		dots[2].style.background = "#0C84D9";
 		dots[2].style.color = "white";
 		progressBars[1].style.background = "#0C84D9";
-		
-	// 発送済み場合は、2, 3, 4つ目のノードを表示
+
+		// 発送済み場合は、2, 3, 4つ目のノードを表示
 	} else if (firstChildClass == "delivered") {
 		dots[1].style.background = "#0C84D9";
 		dots[1].style.color = "white";
