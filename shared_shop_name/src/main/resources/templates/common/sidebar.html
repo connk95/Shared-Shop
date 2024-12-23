@@ -41,7 +41,8 @@
 			<h2 th:class="title" th:text="#{price.select.title}"></h2>
 			<div>
 				<!-- 商品一覧画面以外で表示 -->
-				<form th:if="${sortType == null}" th:action="@{/client/item/list/1(loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
+				<form th:if="${sortType == null}"
+					th:action="@{/client/item/list/1(loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
 					<div class="wrapper">
 						<div class="price-input">
 							<div class="field">
@@ -64,28 +65,56 @@
 					</div>
 				</form>
 				<!-- 商品一覧画面上で表示 -->
-				<form th:unless="${sortType == null}" th:action="@{/client/item/list/{sortType}(categoryId=${categoryId},loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
-					<div class="wrapper">
-						<div class="price-input">
-							<div class="field">
-								<input type="number" class="input-min" value="0" name="loPrice">
+				<form th:unless="${sortType == null}"
+					th:action="@{/client/item/list/{sortType}(categoryId=${categoryId},loPrice=${loPrice},hiPrice=${hiPrice},sortType=${sortType})}">
+					<!-- 価格検索が実行されていない場合 -->
+					<th:block th:if="${hiPrice == null || hiPrice == '0'}">
+						<div class="wrapper">
+							<div class="price-input">
+								<div class="field">
+									<input type="number" class="input-min" value="0" name="loPrice">
+								</div>
+								<div class="separator">-</div>
+								<div class="field">
+									<input type="number" class="input-max" value="10000" name="hiPrice">
+								</div>
+								</select>
+								<input type="hidden" name="categoryId" th:value="${categoryId}" />
+								<input type="submit" th:value="#{select}" />
 							</div>
-							<div class="separator">-</div>
-							<div class="field">
-								<input type="number" class="input-max" value="10000" name="hiPrice">
+							<div class="slider">
+								<div class="progress"></div>
 							</div>
-							</select>
-							<input type="hidden" name="categoryId" th:value="${categoryId}" />
-							<input type="submit" th:value="#{select}" />
+							<div class="range-input">
+								<input type="range" class="range-min" min="0" max="10000" value="0" step="100">
+								<input type="range" class="range-max" min="0" max="10000" value="100000" step="100">
+							</div>
 						</div>
-						<div class="slider">
-							<div class="progress"></div>
+					</th:block>
+					<!-- 価格検索が実行されている場合 -->
+					<th:block th:unless="${hiPrice == null || hiPrice == '0'}">
+						<div class="wrapper">
+							<div class="price-input">
+								<div class="field">
+									<input type="number" class="input-min" th:value="${loPrice}" name="loPrice">
+								</div>
+								<div class="separator">-</div>
+								<div class="field">
+									<input type="number" class="input-max" th:value="${hiPrice}" name="hiPrice">
+								</div>
+								</select>
+								<input type="hidden" name="categoryId" th:value="${categoryId}" />
+								<input type="submit" th:value="#{select}" />
+							</div>
+							<div class="slider">
+								<div class="progress"></div>
+							</div>
+							<div class="range-input">
+								<input type="range" class="range-min" min="0" max="10000" th:value="${loPrice}" step="100">
+								<input type="range" class="range-max" min="0" max="10000" th:value="${hiPrice}" step="100">
+							</div>
 						</div>
-						<div class="range-input">
-							<input type="range" class="range-min" min="0" max="10000" value="0" step="100">
-							<input type="range" class="range-max" min="0" max="10000" value="100000" step="100">
-						</div>
-					</div>
+					</th:block>
 				</form>
 			</div>
 		</div>
