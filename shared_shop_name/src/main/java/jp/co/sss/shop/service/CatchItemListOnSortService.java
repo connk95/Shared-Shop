@@ -34,10 +34,22 @@ public class CatchItemListOnSortService {
 	 * 検索条件分岐処理
 	 * @param sortType 表示順 (1: 新着順, 2: 売れ筋順)
 	 * @param categoryId カテゴリーID
-	 * @param price 検索価格帯
+	 * @param loPriceStr 検索価格帯下限
+	 * @param hiPriceStr 検索価格帯上限
 	 * @return 商品リスト
 	 */
-	public List<ItemBean> creatItemList(int sortType, Integer categoryId, Integer loPrice, Integer hiPrice) {
+	public List<ItemBean> creatItemList(int sortType, Integer categoryId, String loPriceStr, String hiPriceStr) {
+		
+		//入力値がIntの上限を超えていた場合はnullを返す
+		Integer loPrice;
+		Integer hiPrice;
+		try {
+			loPrice = Integer.parseInt(loPriceStr);
+			hiPrice = Integer.parseInt(hiPriceStr);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+		
 		// 上限価格、下限価格、カテゴリIDがNullだった場合は初期値で初期化を行う
 		if (loPrice == null) {
 			loPrice = Constant.DEFAULT_PRICE_SEARCH_NUM;
