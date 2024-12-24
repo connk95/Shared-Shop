@@ -37,6 +37,7 @@ public class CatchItemListOnSortService {
 	 * @param categoryId カテゴリーID
 	 * @param loPriceStr 検索価格帯下限
 	 * @param hiPriceStr 検索価格帯上限
+	 * @param model Viewとの受け渡し
 	 * @return 商品リスト
 	 */
 	public List<ItemBean> creatItemList(int sortType, Integer categoryId, String loPriceStr, String hiPriceStr,

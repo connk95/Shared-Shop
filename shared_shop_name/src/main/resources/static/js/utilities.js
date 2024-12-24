@@ -11,8 +11,8 @@ let priceGap = 1000;
 window.onload = function() {
 	let minPrice = parseInt(priceInput[0].value),
 		maxPrice = parseInt(priceInput[1].value);
-	if(maxPrice > 10000){
-		 maxPrice = 10000;
+	if (maxPrice > 10000) {
+		maxPrice = 10000;
 	}
 	rangeInput[0].value = minPrice;
 	range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
@@ -25,9 +25,16 @@ priceInput.forEach((input) => {
 	input.addEventListener("input", (e) => {
 		let minPrice = parseInt(priceInput[0].value),
 			maxPrice = parseInt(priceInput[1].value);
+		if (minPrice < 0) {
+			minPrice = 0;
+		}
+		if (maxPrice > 10000) {
+			maxPrice = 10000;
+		}
 
 		if (maxPrice - minPrice >= priceGap && maxPrice <= rangeInput[1].max) {
 			if (e.target.classList.contains("input-min")) {
+
 				rangeInput[0].value = minPrice;
 				range.style.left = (minPrice / rangeInput[0].max) * 100 + "%";
 			} else {
