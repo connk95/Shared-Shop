@@ -188,6 +188,7 @@ public class BasketService {
 				itemNameListLessThan.add(basketBean.getName());
 				basketBean.setOrderNum(stock);
 			}
+			basketBeans.get(basketBeans.indexOf(basketBean)).setStock(item.getStock());
 		}
 
 		//Veiwに商品名を登録
