@@ -92,4 +92,7 @@ public class Constant {
 	
 	/** 価格別検索 検索値がマイナス値 */
 	public static final String PRICE_SEARCH_KEY_IS_MINUS = "KeyIsMinus";
+	
+	/** 配達番号 使用済み */
+	public static final String Tracking_Number_IS_EXIST = "TrackingNumberIsExist";
 }
