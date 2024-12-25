@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -27,6 +29,7 @@ import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.repository.TrackingRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * 注文管理 一覧表示機能(運用管理者用)のコントローラクラス
@@ -148,7 +151,7 @@ public class AdminOrderShowController {
 
 	@PostMapping(path = "/admin/order/detail/{id}")
 	public String updateTracking(@PathVariable int id, @Valid TrackingForm form, BindingResult result,
-			Model model) {
+			Model model, RedirectAttributes redirectAttributes) {
 
 		//　エラーがある場合は注文情報とエラーメッセージを表示
 		if (result.hasErrors()) {
@@ -177,11 +180,18 @@ public class AdminOrderShowController {
 		}
 
 		// エラーがない場合は配達情報を更新
-		Tracking tracking = trackingRepository.findByOrderId(id);
-		tracking.setStatus(form.getStatus());
-		tracking.setTrackingNumber(form.getTrackingNumber());
-
-		trackingRepository.save(tracking);
+		try {
+			
+			Tracking tracking = trackingRepository.findByOrderId(id);
+			tracking.setStatus(form.getStatus());
+			tracking.setTrackingNumber(form.getTrackingNumber());
+			
+			trackingRepository.save(tracking);
+			
+		} catch (DataIntegrityViolationException e) {
+			redirectAttributes.addFlashAttribute("TrackingNumberIsExist", Constant.Tracking_Number_IS_EXIST);
+			return "redirect:/admin/order/detail/" + id;
+		}
 
 		return "redirect:/admin/order/detail/" + id;
 	}

@@ -51,6 +51,7 @@
 					<th>配達番号</th>
 					<td th:unless="${tracking.trackingNumber}">
 						<input type="text" th:field="*{trackingNumber}">
+						<p th:text="#{msg.tracking.mumber.isExist}" th:if="${TrackingNumberIsExist != null}"></p>
 					</td>
 					<div th:if="${#fields.hasErrors()}">
 						<ul class="error_list">
